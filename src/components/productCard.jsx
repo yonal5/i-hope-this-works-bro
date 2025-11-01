@@ -15,9 +15,9 @@ export default function ProductCard(props) {
 				product.labelledPrice>product.price?
 				<div className="flex gap-3 items-center">
 					
-					<p className="text-lg text-accent font-semibold">LKR {product.price.toFixed(2)}</p>
+					<p className="text-lg text-accent font-semibold">USD {product.price.toFixed(2)}</p>
 				</div>:
-				<p className="text-lg text-accent font-semibold">LKR {product.price.toFixed(2)}</p>
+				<p className="text-lg text-accent font-semibold">USD {product.price.toFixed(2)}</p>
 			}
 			<p className="text-sm text-secondary/70">{product.productID}</p>
 			
