@@ -49,10 +49,10 @@ if (status === "error") return <h1 className="text-red-500">Failed to load produ
                         {
                             product.labelledPrice>product.price?
                             <div className="flex gap-3 items-center">
-                                <p className="text-lg text-secondary font-semibold line-through">LKR {product.labelledPrice.toFixed(2)}</p>
-                                <p className="text-lg text-accent font-semibold">LKR {product.price.toFixed(2)}</p>
+                                <p className="text-lg text-secondary font-semibold line-through">USD {product.labelledPrice.toFixed(2)}</p>
+                                <p className="text-lg text-accent font-semibold">USD {product.price.toFixed(2)}</p>
                             </div>:
-                            <p className="text-lg text-accent font-semibold">LKR {product.price.toFixed(2)}</p>
+                            <p className="text-lg text-accent font-semibold">USD {product.price.toFixed(2)}</p>
                         }
 						<div className="w-full h-[40px] flex gap-4 mt-[60px]">
 							<button
@@ -98,4 +98,5 @@ if (status === "error") return <h1 className="text-red-500">Failed to load produ
 			)}
 		</div>
 	);
+
 }
