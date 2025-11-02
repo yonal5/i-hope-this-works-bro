@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import {Header, TtitleBar } from "../components/header";
+import Header, { ProductNews, TtitleBar,} from "../components/header";
 import { ProductPage } from "./productPage";
 import ProductOverview from "./productOverview";
 
@@ -29,7 +29,13 @@ export default function HomePage() {
     <div className="w-auto h-auto bg-white">
       <MainHeader/>
 
-      
+      {/* Show TitleBar + ArivleBar only on homepage ("/" or "/products") */}
+      {(location.pathname === "/") && (
+        <>
+          <ProductNews/>
+          
+        </>
+      )}
       <TtitleBar />
 
       <Routes>
