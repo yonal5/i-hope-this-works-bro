@@ -125,10 +125,10 @@ export default function Header() {
 						  	<option value="Website green">Website Green</option>
 						  	<option value="Website red">Website Red</option>
 						  	<option value="Website yellow">Website Yellow</option>
-		  			  	<option value="Website perple">Website Perple</option>
+		  			 	 	<option value="Website perple">Website Perple</option>
 			 		  		<option value="Website orenge">Website Orenge</option>
 						  	<option value="Website black">Website Black</option>
-					  		<option value="Website blue">Website Blue</option>
+					  		
                 </select>
 
                 <div className="flex gap-2 justify-center items-center">
@@ -212,15 +212,15 @@ export default function Header() {
               className="rounded px-2 py-2 text-black bg-primary"
               aria-label="Category filter"
             >
-              <option value="">All categories</option>
-              <option value="Website blue">Website Blue</option>
+            			    <option value="">All categories</option>
+            				<option value="Website blue">Website Blue</option>
 							<option value="Website green">Website Green</option>
 							<option value="Website red">Website Red</option>
 							<option value="Website yellow">Website Yellow</option>
-		  				<option value="Website perple">Website Perple</option>
+		  					<option value="Website perple">Website Perple</option>
 			 				<option value="Website orenge">Website Orenge</option>
 							<option value="Website black">Website Black</option>
-							<option value="Website blue">Website Blue</option>
+							
             </select>
             <button
               type="submit"
