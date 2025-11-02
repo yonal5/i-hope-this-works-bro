@@ -29,11 +29,11 @@ export default function UpdateProductPage() {
 					setCategories(res.data);
 				} else {
 					// fallback static list
-					setCategories(["Cream", "Lotion", "Serum", "Keyboard", "Mouse", "Motherboard", "Graphics Card"]);
+					setCategories(["Website Blue", "Website Green", "Website Red", "Website Yellow","Website Perple", "Website Orenge", "Website Black"]);
 				}
 			} catch (err) {
 				console.warn("⚠️ Failed to load categories, using fallback");
-				setCategories(["Cream", "Lotion", "Serum", "Keyboard", "Mouse", "Motherboard", "Graphics Card"]);
+				setCategories(["Website Blue", "Website Green", "Website Red", "Website Yellow","Website Perple", "Website Orenge", "Website Black"]);
 			}
 		}
 		loadCategories();
