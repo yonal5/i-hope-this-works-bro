@@ -120,18 +120,15 @@ export default function Header() {
                   className="px-2 py-2 border rounded text-black"
                   aria-label="Mobile category"
                 >
-                  <option value="">All</option>
-                  <option value="Keyboard">Keyboard</option>
-                  <option value="Mouse">Mouse</option>
-                  <option value="Motherboard">Motherboard</option>
-                  <option value="Grapics card">Grapics Card</option>
-                  <option value="Gaming case">Gaming Case</option>
-                  <option value="Pc pribild">PC Pre Bilde</option>
-                  <option value="Cooler">Cooler</option>
-                  <option value="Power Supply">Power Supply</option>
-                  <option value="CPU">CPU</option>
-                  <option value="Ram">Ram</option>
-                  <option value="Storage">Storage</option>
+                <option value="">All categories</option>
+                <option value="Website blue">Website Blue</option>
+						  	<option value="Website green">Website Green</option>
+						  	<option value="Website red">Website Red</option>
+						  	<option value="Website yellow">Website Yellow</option>
+		  			  	<option value="Website perple">Website Perple</option>
+			 		  		<option value="Website orenge">Website Orenge</option>
+						  	<option value="Website black">Website Black</option>
+					  		<option value="Website blue">Website Blue</option>
                 </select>
 
                 <div className="flex gap-2 justify-center items-center">
@@ -216,17 +213,14 @@ export default function Header() {
               aria-label="Category filter"
             >
               <option value="">All categories</option>
-              <option value="Keyboard">Keyboard</option>
-              <option value="Mouse">Mouse</option>
-              <option value="Motherboard">Motherboard</option>
-              <option value="Grapics card">Grapics Card</option>
-              <option value="Gaming case">Gaming Case</option>
-              <option value="Pc pribild">PC Pre Bilde</option>
-              <option value="Cooler">Cooler</option>
-              <option value="Power Supply">Power Supply</option>
-              <option value="CPU">CPU</option>
-              <option value="Ram">Ram</option>
-              <option value="Storage">Storage</option>
+              <option value="Website blue">Website Blue</option>
+							<option value="Website green">Website Green</option>
+							<option value="Website red">Website Red</option>
+							<option value="Website yellow">Website Yellow</option>
+		  				<option value="Website perple">Website Perple</option>
+			 				<option value="Website orenge">Website Orenge</option>
+							<option value="Website black">Website Black</option>
+							<option value="Website blue">Website Blue</option>
             </select>
             <button
               type="submit"
