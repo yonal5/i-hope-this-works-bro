@@ -21,11 +21,13 @@ export default function CheckoutPage() {
     note: "",
   });
 
+  // Handle form input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Update cart quantity
   const handleQuantityChange = (index, delta) => {
     const newCart = [...cart];
     newCart[index].quantity += delta;
@@ -33,48 +35,66 @@ export default function CheckoutPage() {
     setCart(newCart);
   };
 
-  const getTotal = () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Calculate total
+  const getTotal = () =>
+    cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Handle checkout
   const handleCheckout = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    toast.error("Please login first");
-    navigate("/login");
-    return;
-  }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/login");
+      return;
+    }
 
-  if (cart.length === 0) {
-    toast.error("Cart is empty!");
-    return;
-  }
+    if (!cart.length) {
+      toast.error("Cart is empty!");
+      return;
+    }
 
-  const orderData = {
-    ...formData,
-    cartItems: cart.map(item => ({
-      productID: item.productID,
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price
-    }))
+    // Validate required fields
+    const requiredFields = ["fullName", "email", "phone", "websiteName", "color", "theme"];
+    for (let field of requiredFields) {
+      if (!formData[field]?.trim()) {
+        toast.error(`Please fill ${field}`);
+        return;
+      }
+    }
+
+    // Prepare payload
+    const payload = {
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      websiteName: formData.websiteName.trim(),
+      color: formData.color.trim(),
+      theme: formData.theme,
+      domain: formData.domain.trim() || undefined,
+      note: formData.note.trim() || undefined,
+      cartItems: cart.map(item => ({
+        productID: item.productID,
+        quantity: item.quantity,
+        price: item.price
+      })),
+    };
+
+    setLoading(true);
+    try {
+      await axios.post(
+        import.meta.env.VITE_API_URL + "/api/orders",
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Order placed successfully!");
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || "Failed to place order");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  setLoading(true);
-  try {
-    await axios.post(import.meta.env.VITE_API_URL + "/api/orders", orderData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-    });
-    toast.success("Order placed successfully!");
-    navigate("/"); // redirect home
-  } catch (err) {
-    toast.error("Failed to place order");
-    console.error(err.response?.data || err.message);
-  } finally {
-    setLoading(false);
-  }
-};
 
   return (
     <div className="w-full min-h-screen flex justify-center items-start pt-10 bg-gray-100">
@@ -123,4 +143,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
