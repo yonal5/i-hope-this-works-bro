@@ -36,61 +36,45 @@ export default function CheckoutPage() {
   const getTotal = () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error("Please login first");
-      navigate("/login");
-      return;
-    }
+  const token = localStorage.getItem("token");
+  if (!token) {
+    toast.error("Please login first");
+    navigate("/login");
+    return;
+  }
 
-    if (!cart.length) {
-      toast.error("Cart is empty!");
-      return;
-    }
+  if (cart.length === 0) {
+    toast.error("Cart is empty!");
+    return;
+  }
 
-    // Validate required fields
-    const requiredFields = ["fullName", "email", "phone", "websiteName", "color", "theme"];
-    for (let field of requiredFields) {
-      if (!formData[field].trim()) {
-        toast.error(`Please fill ${field}`);
-        return;
-      }
-    }
-
-    // Prepare payload exactly as backend expects
-    const payload = {
-      fullName: formData.fullName.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
-      websiteName: formData.websiteName.trim(),
-      color: formData.color.trim(),
-      theme: formData.theme,
-      domain: formData.domain.trim() || undefined, // optional
-      note: formData.note.trim() || undefined,     // optional
-      cartItems: cart.map(item => ({
-        productID: item.productID,
-        quantity: item.quantity,
-        price: item.price
-      })),
-    };
-
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        import.meta.env.VITE_API_URL + "/api/orders",
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success("Order placed successfully!");
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-      // Show backend error message if exists
-      toast.error(err?.response?.data?.message || "Failed to place order");
-    } finally {
-      setLoading(false);
-    }
+  const orderData = {
+    ...formData,
+    cartItems: cart.map(item => ({
+      productID: item.productID,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price
+    }))
   };
+
+  setLoading(true);
+  try {
+    await axios.post(import.meta.env.VITE_API_URL + "/api/orders", orderData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+    });
+    toast.success("Order placed successfully!");
+    navigate("/"); // redirect home
+  } catch (err) {
+    toast.error("Failed to place order");
+    console.error(err.response?.data || err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full min-h-screen flex justify-center items-start pt-10 bg-gray-100">
@@ -139,3 +123,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
