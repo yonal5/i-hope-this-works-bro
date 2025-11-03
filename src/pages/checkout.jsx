@@ -15,7 +15,7 @@ export default function CheckoutPage() {
     email: "",
     phone: "",
     websiteName: "",
-    color: "Green",
+    color: "Green", // safe default
     theme: "light",
     domain: "",
     note: "",
@@ -43,12 +43,21 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (cart.length === 0) {
+    if (!cart.length) {
       toast.error("Cart is empty!");
       return;
     }
 
-    // Backend expects: fullName, email, phone, websiteName, color, theme, cartItems, domain, note
+    // Validate required fields
+    const requiredFields = ["fullName", "email", "phone", "websiteName", "color", "theme"];
+    for (let field of requiredFields) {
+      if (!formData[field].trim()) {
+        toast.error(`Please fill ${field}`);
+        return;
+      }
+    }
+
+    // Prepare payload exactly as backend expects
     const payload = {
       fullName: formData.fullName.trim(),
       email: formData.email.trim(),
@@ -56,8 +65,8 @@ export default function CheckoutPage() {
       websiteName: formData.websiteName.trim(),
       color: formData.color.trim(),
       theme: formData.theme,
-      domain: formData.domain.trim(),
-      note: formData.note.trim(),
+      domain: formData.domain.trim() || undefined, // optional
+      note: formData.note.trim() || undefined,     // optional
       cartItems: cart.map(item => ({
         productID: item.productID,
         quantity: item.quantity,
@@ -65,21 +74,18 @@ export default function CheckoutPage() {
       })),
     };
 
-    // Validate required fields
-    if (!payload.fullName || !payload.email || !payload.phone || !payload.websiteName || !payload.color || !payload.theme) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
     setLoading(true);
     try {
-      await axios.post(import.meta.env.VITE_API_URL + "/api/orders", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.post(
+        import.meta.env.VITE_API_URL + "/api/orders",
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       toast.success("Order placed successfully!");
-      navigate("/"); 
+      navigate("/");
     } catch (err) {
       console.error(err);
+      // Show backend error message if exists
       toast.error(err?.response?.data?.message || "Failed to place order");
     } finally {
       setLoading(false);
