@@ -38,38 +38,68 @@ export default function CheckoutPage() {
   const getTotal = () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error("Please login first");
-      navigate("/login");
+  const token = localStorage.getItem("token");
+  if (!token) {
+    toast.error("Please login first");
+    navigate("/login");
+    return;
+  }
+
+  if (!cart.length) {
+    toast.error("Cart is empty!");
+    return;
+  }
+
+  // Validate required fields
+  const requiredFields = ["fullName", "email", "phone", "websiteName", "color", "theme"];
+  for (let field of requiredFields) {
+    if (!formData[field]?.trim()) {
+      toast.error(`Please fill ${field}`);
       return;
     }
+  }
 
-    if (cart.length === 0) {
-      toast.error("Cart is empty!");
-      return;
-    }
-
-    const orderData = new FormData();
-    for (const key in formData) {
-      orderData.append(key, formData[key]);
-    }
-    orderData.append("cartItems", JSON.stringify(cart));
-
-    setLoading(true);
-    try {
-      await axios.post(import.meta.env.VITE_API_URL + "/api/orders", orderData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success("Order placed successfully!");
-      navigate("/"); // redirect home
-    } catch (err) {
-      toast.error("Failed to place order");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  // Prepare safe payload
+  const payload = {
+    fullName: formData.fullName.trim(),
+    email: formData.email.trim(),
+    phone: formData.phone.trim(),
+    websiteName: formData.websiteName.trim(),
+    color: formData.color.trim(),
+    theme: formData.theme,
+    // Only include optional fields if they are not empty
+    ...(formData.domain?.trim() && { domain: formData.domain.trim() }),
+    ...(formData.note?.trim() && { note: formData.note.trim() }),
+    cartItems: cart
+      .filter(item => item.productID && item.quantity > 0 && item.price >= 0)
+      .map(item => ({
+        productID: item.productID,
+        quantity: item.quantity,
+        price: item.price
+      })),
   };
+
+  if (!payload.cartItems.length) {
+    toast.error("Cart items are invalid!");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const res = await axios.post(
+      import.meta.env.VITE_API_URL + "/api/orders",
+      payload,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    toast.success("Order placed successfully!");
+    navigate("/");
+  } catch (err) {
+    console.error("Checkout Error:", err);
+    toast.error(err?.response?.data?.message || "Failed to place order");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full min-h-screen flex justify-center items-start pt-10 bg-gray-100">
@@ -190,3 +220,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
