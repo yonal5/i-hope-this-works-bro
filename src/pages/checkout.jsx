@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -15,19 +15,19 @@ export default function CheckoutPage() {
     email: "",
     phone: "",
     websiteName: "",
-    color: "Green", // safe default
+    color: "Green", // now name instead of hex
     theme: "light",
+    logo: null,
     domain: "",
     note: "",
   });
 
-  // Handle form input change
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, files } = e.target;
+    if (name === "logo") setFormData({ ...formData, logo: files[0] });
+    else setFormData({ ...formData, [name]: value });
   };
 
-  // Update cart quantity
   const handleQuantityChange = (index, delta) => {
     const newCart = [...cart];
     newCart[index].quantity += delta;
@@ -35,11 +35,8 @@ export default function CheckoutPage() {
     setCart(newCart);
   };
 
-  // Calculate total
-  const getTotal = () =>
-    cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const getTotal = () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Handle checkout
   const handleCheckout = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -48,49 +45,27 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!cart.length) {
+    if (cart.length === 0) {
       toast.error("Cart is empty!");
       return;
     }
 
-    // Validate required fields
-    const requiredFields = ["fullName", "email", "phone", "websiteName", "color", "theme"];
-    for (let field of requiredFields) {
-      if (!formData[field]?.trim()) {
-        toast.error(`Please fill ${field}`);
-        return;
-      }
+    const orderData = new FormData();
+    for (const key in formData) {
+      orderData.append(key, formData[key]);
     }
-
-    // Prepare payload
-    const payload = {
-      fullName: formData.fullName.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
-      websiteName: formData.websiteName.trim(),
-      color: formData.color.trim(),
-      theme: formData.theme,
-      domain: formData.domain.trim() || undefined,
-      note: formData.note.trim() || undefined,
-      cartItems: cart.map(item => ({
-        productID: item.productID,
-        quantity: item.quantity,
-        price: item.price
-      })),
-    };
+    orderData.append("cartItems", JSON.stringify(cart));
 
     setLoading(true);
     try {
-      await axios.post(
-        import.meta.env.VITE_API_URL + "/api/orders",
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.post(import.meta.env.VITE_API_URL + "/api/orders", orderData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       toast.success("Order placed successfully!");
-      navigate("/");
+      navigate("/"); // redirect home
     } catch (err) {
+      toast.error("Failed to place order");
       console.error(err);
-      toast.error(err?.response?.data?.message || "Failed to place order");
     } finally {
       setLoading(false);
     }
@@ -121,22 +96,94 @@ export default function CheckoutPage() {
 
         {/* Account Info */}
         <h3 className="font-semibold mt-4">Account Information</h3>
-        <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Full Name" className="border p-2 rounded w-full"/>
-        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="border p-2 rounded w-full"/>
-        <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" className="border p-2 rounded w-full"/>
+        <input
+          type="text"
+          name="fullName"
+          value={formData.fullName}
+          onChange={handleChange}
+          placeholder="Full Name"
+          required
+          className="border p-2 rounded w-full"
+        />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+          required
+          className="border p-2 rounded w-full"
+        />
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          placeholder="Phone Number"
+          className="border p-2 rounded w-full"
+        />
 
         {/* Website Info */}
         <h3 className="font-semibold mt-4">Website Information</h3>
-        <input type="text" name="websiteName" value={formData.websiteName} onChange={handleChange} placeholder="Website Name" className="border p-2 rounded w-full"/>
-        <input type="text" name="color" value={formData.color} onChange={handleChange} placeholder="Color Name (Green, Blue, etc.)" className="border p-2 rounded w-full"/>
-        <select name="theme" value={formData.theme} onChange={handleChange} className="border p-2 rounded w-full">
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-        <input type="text" name="domain" value={formData.domain} onChange={handleChange} placeholder="Domain Name (optional)" className="border p-2 rounded w-full"/>
-        <textarea name="note" value={formData.note} onChange={handleChange} placeholder="Additional Notes / Requirements" rows="4" className="border p-2 rounded w-full"/>
+        <input
+          type="text"
+          name="websiteName"
+          value={formData.websiteName}
+          onChange={handleChange}
+          placeholder="Website Name"
+          required
+          className="border p-2 rounded w-full"
+        />
+        <div>
+          <label className="text-sm block mb-1">Theme Color (Name)</label>
+          <input
+            type="text"
+            name="color"
+            value={formData.color}
+            onChange={handleChange}
+            placeholder="Green, Blue, etc."
+            className="border p-2 rounded w-full"
+          />
+        </div>
+        <div>
+          <label className="text-sm block mb-1">Theme</label>
+          <select
+            name="theme"
+            value={formData.theme}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+          >
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-sm block mb-1">Upload Logo</label>
+          <input type="file" name="logo" accept="image/*" onChange={handleChange} />
+        </div>
+        <input
+          type="text"
+          name="domain"
+          value={formData.domain}
+          onChange={handleChange}
+          placeholder="Domain Name (optional)"
+          className="border p-2 rounded w-full"
+        />
+        <textarea
+          name="note"
+          value={formData.note}
+          onChange={handleChange}
+          placeholder="Additional Notes / Requirements"
+          rows="4"
+          className="border p-2 rounded w-full"
+        />
 
-        <button onClick={handleCheckout} disabled={loading} className="bg-accent text-white py-2 rounded hover:bg-accent/80 mt-2">
+        {/* Checkout Button */}
+        <button
+          onClick={handleCheckout}
+          disabled={loading}
+          className="bg-accent text-white py-2 rounded hover:bg-accent/80 mt-2"
+        >
           {loading ? "Placing Order..." : "Checkout"}
         </button>
       </div>
