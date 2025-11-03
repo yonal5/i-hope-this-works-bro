@@ -80,7 +80,7 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
-      await axios.post(import.meta.env.VITE_API_URL + "/api/ordersr", orderData, {
+      await axios.post(import.meta.env.VITE_API_URL + "/api/orders", orderData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Order placed successfully!");
@@ -211,4 +211,5 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
 
