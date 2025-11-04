@@ -72,7 +72,7 @@ export default function Header() {
       <div className="w-full h-full flex relative ">
         <img
           src="/logo.png"
-          className="hidden lg:flex h-full absolute w-[170px] left-0  object-cover"
+          className="hidden lg:flex h-full absolute w-[200px] left-0  object-cover"
         />
         {/* mobile header: menu, logo and search toggle */}
         <div className="lg:hidden w-full relative flex justify-center items-center">
