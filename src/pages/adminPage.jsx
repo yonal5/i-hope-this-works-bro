@@ -52,7 +52,7 @@ export default function AdminPage() {
 				<div className="flex flex-row w-[90%] h-[70px] bg-accent items-center rounded-2xl mb-[20px]">
 					<img
 						src="/logo.png"
-						alt="Alipres - Best Computer & Gaming Store"
+						alt="SnapSite - Best Computer & Gaming Store"
 						className="h-[70px]"
 					/>
 					<span className="text-white text-xl  ml-4">Admin panel</span>
