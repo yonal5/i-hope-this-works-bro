@@ -77,7 +77,7 @@ export default function CartPage() {
         {/* Checkout Section */}
         <div className="w-full h-[120px] bg-white flex flex-col-reverse lg:flex-row justify-end items-center relative">
           <Link
-            to="/checkout"
+            to="/chat"
             state={cart}
             className="lg:absolute left-0 bg-accent text-white px-6 py-3 lg:ml-[20px] hover:bg-accent/80"
           >
