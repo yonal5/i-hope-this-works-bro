@@ -4,7 +4,7 @@ import { ProductPage } from "./productPage";
 import ProductOverview from "./productOverview";
 
 import CartPage from "./cart";
-import CheckoutPage from "./checkout";
+import ChatPage from "./ChatPage";
 import About from "./About";
 import Contact from "./Contact";
 import Settings from "./settings";
@@ -53,7 +53,8 @@ export default function HomePage() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/chat" element={<ChatPage />} />
+
         
         <Route path="/*" element={<NotFoundPage/>} />
       </Routes>
@@ -61,3 +62,4 @@ export default function HomePage() {
     </div>
   );
 }
+
