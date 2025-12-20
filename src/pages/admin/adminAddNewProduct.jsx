@@ -12,7 +12,7 @@ export default function AddProductPage() {
 	const [images, setImages] = useState([]);
 	const [price, setPrice] = useState(0);
 	const [labelledPrice, setLabelledPrice] = useState(0);
-	const [category, setCategory] = useState("");
+	const [category, setCategory] = useState("Website blue");
 	const [stock, setStock] = useState(0);
 	const navigate = useNavigate();
 
