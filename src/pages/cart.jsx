@@ -9,7 +9,8 @@ import axios from "axios";
 export default function CartPage({ user }) { // <-- user prop contains registered name
   const [cart, setCart] = useState(loadCart());
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:5000";
+ 
+const BASE_URL = import.meta.env.VITE_API_URL;
 
   const updateCart = (item, qty) => {
     addToCart(item, qty);
@@ -135,3 +136,4 @@ export default function CartPage({ user }) { // <-- user prop contains registere
     </div>
   );
 }
+
