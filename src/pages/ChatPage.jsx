@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-export default function ChatPage() {
+export default function ChatPage({ user }) { // <-- receive user as prop
   const location = useLocation();
-  const cartFromState = location.state?.cart || []; // <-- get cart
+  const cartFromState = location.state?.cart || [];
 
   const [messages, setMessages] = useState([]);
   const [customerName, setCustomerName] = useState("");
@@ -13,12 +13,32 @@ export default function ChatPage() {
 
   const BASE_URL = "http://localhost:5000";
 
+  // Assign guestId and userNumber
   const guestId = localStorage.getItem("guestId") || crypto.randomUUID();
   localStorage.setItem("guestId", guestId);
 
+  const userNumber = user?.id || localStorage.getItem("guestNumber") || (() => {
+    const num = Math.floor(Math.random() * 1000000);
+    localStorage.setItem("guestNumber", num);
+    return num;
+  })();
+
+  // Set default customer name
+  useEffect(() => {
+    if (user?.name || user?.username) {
+      setCustomerName(user.name || user.username);
+    } else {
+      setCustomerName(`User-${userNumber}`);
+    }
+  }, [user, userNumber]);
+
   const loadMessages = async () => {
-    const res = await axios.get(`${BASE_URL}/api/chat?guestId=${guestId}`);
-    setMessages(res.data);
+    try {
+      const res = await axios.get(`${BASE_URL}/api/chat?guestId=${guestId}`);
+      setMessages(res.data);
+    } catch (err) {
+      console.error("Failed to load messages:", err);
+    }
   };
 
   useEffect(() => {
@@ -30,14 +50,18 @@ export default function ChatPage() {
   const sendMessage = async () => {
     if (!customerName || !message) return;
 
-    await axios.post(`${BASE_URL}/api/chat`, {
-      customerName,
-      guestId,
-      message,
-    });
+    try {
+      await axios.post(`${BASE_URL}/api/chat`, {
+        customerName,
+        guestId,
+        message,
+      });
 
-    setMessage("");
-    loadMessages();
+      setMessage("");
+      loadMessages();
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
   };
 
   return (
@@ -48,10 +72,10 @@ export default function ChatPage() {
         className="border px-4 py-2 mb-4 rounded"
         placeholder="Your Name"
         value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
+        readOnly // prevent editing
       />
 
-      {/* Show Cart Items in Chat */}
+      {/* Show Cart Items */}
       {cart.length > 0 && (
         <div className="bg-white w-full max-w-xl p-4 mb-4 rounded border">
           <h2 className="font-semibold text-lg mb-2">Your Cart Items:</h2>
