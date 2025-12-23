@@ -6,35 +6,36 @@ export default function AdminChat() {
   const [customers, setCustomers] = useState([]);
   const [selectedGuestId, setSelectedGuestId] = useState(null);
   const [reply, setReply] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
 
+  // ⚠️ IMPORTANT: Use ENV in production
   const BASE_URL = import.meta.env.VITE_API_URL;
 
   const messagesContainerRef = useRef(null);
 
-  // Load all customers
+  // ---------------- LOAD CUSTOMERS ----------------
   const loadCustomers = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/chat/customers`);
-      setCustomers(res.data);
 
-      // Set first customer as default selected
-      if (!selectedGuestId && res.data.length > 0) {
-        setSelectedGuestId(res.data[0].userId);
-      }
+      setCustomers((prev) => {
+        // keep previous selection
+        if (!selectedGuestId && res.data.length > 0) {
+          setSelectedGuestId(res.data[0].userId);
+        }
+        return res.data;
+      });
     } catch (err) {
-      console.error("Failed to load customers:", err);
+      console.error(err);
       setError("Failed to load customers");
     }
   };
 
-  // Load messages for selected customer
+  // ---------------- LOAD MESSAGES ----------------
   const loadMessages = async () => {
     if (!selectedGuestId) return;
     try {
-      setLoading(true);
       const res = await axios.get(
         `${BASE_URL}/api/chat/admin?guestId=${selectedGuestId}`
       );
@@ -42,62 +43,54 @@ export default function AdminChat() {
     } catch (err) {
       console.error(err);
       setError("Failed to load chats");
-    } finally {
-      setLoading(false);
     }
   };
 
-  // Auto-scroll messages container to bottom
-  const scrollMessagesToBottom = () => {
+  // ---------------- AUTO SCROLL ----------------
+  useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
-  };
+  }, [messages]);
 
+  // ---------------- POLLING (AUTO REFRESH) ----------------
   useEffect(() => {
     loadCustomers();
-  }, []);
-
-  useEffect(() => {
     loadMessages();
+
     const interval = setInterval(() => {
-      loadMessages();
+      loadCustomers();   // 👈 refresh customer list
+      loadMessages();    // 👈 refresh messages
     }, 2000);
+
     return () => clearInterval(interval);
   }, [selectedGuestId]);
 
-  useEffect(() => {
-    scrollMessagesToBottom();
-  }, [messages]);
+  // ---------------- SEND ADMIN REPLY ----------------
+  const sendReply = async () => {
+    if (!reply.trim() || !selectedGuestId) return;
+
+    try {
+      await axios.post(`${BASE_URL}/api/chat/admin/send`, {
+        guestId: selectedGuestId,
+        message: reply.trim(),
+      });
+      setReply("");
+      loadMessages();
+    } catch (err) {
+      setError("Failed to send reply");
+    }
+  };
 
   const filteredCustomers = customers.filter((c) =>
     c.customerName.toLowerCase().includes(search.toLowerCase())
   );
 
-  const sendReply = async () => {
-    if (!reply.trim() || !selectedGuestId) return;
-
-    try {
-      const res = await axios.post(`${BASE_URL}/api/chat/admin/send`, {
-        guestId: selectedGuestId,
-        message: reply.trim(),
-      });
-
-      if (res.status === 200 || res.status === 201) {
-        setReply("");
-        loadMessages();
-      }
-    } catch (err) {
-      console.error("Send reply error:", err.response?.data || err.message);
-      setError(err.response?.data?.message || "Failed to send reply");
-    }
-  };
-
   return (
     <div className="flex gap-6 p-6">
-      {/* Customer List */}
-      <div className="w-64 h-[880px] bg-white p-4 rounded border">
+      {/* CUSTOMER LIST */}
+      <div className="w-64 bg-white p-4 rounded border">
         <h2 className="font-bold">Customers</h2>
         <input
           className="w-full border px-2 py-1 rounded mt-2"
@@ -109,56 +102,47 @@ export default function AdminChat() {
         {filteredCustomers.map((c) => (
           <button
             key={c.userId}
+            onClick={() => setSelectedGuestId(c.userId)}
             className={`w-full text-left px-3 py-2 mt-2 rounded ${
               selectedGuestId === c.userId
                 ? "bg-blue-600 text-white"
-                : "bg-gray-100 hover:bg-gray-200"
+                : "bg-gray-100"
             }`}
-            onClick={() => setSelectedGuestId(c.userId)}
           >
             {c.customerName}
           </button>
         ))}
       </div>
 
-      {/* Chat Messages */}
-      <div className="flex-1 h-[879px] flex flex-col">
+      {/* CHAT AREA */}
+      <div className="flex-1 flex flex-col">
         <div
-          className="bg-white p-4 h-sc border rounded overflow-y-auto flex-1"
           ref={messagesContainerRef}
+          className="bg-white border rounded p-4 flex-1 overflow-y-auto"
         >
           {messages.map((msg) => (
-            <div key={msg._id || Math.random()} className="my-2">
-              <b
-                className={
-                  msg.sender === "admin" ? "text-red-600" : "text-blue-600"
-                }
-              >
-                {msg.sender === "admin"
-                  ? "Admin"
-                  : customers.find((c) => c.userId === msg.guestId)
-                      ?.customerName || "Guest"}
-                :
+            <div key={msg._id} className="mb-2">
+              <b className={msg.sender === "admin" ? "text-red-600" : "text-blue-600"}>
+                {msg.sender === "admin" ? "Admin" : "Customer"}:
               </b>
               <p>{msg.message}</p>
-              <p className="text-gray-400 text-xs">
-                {new Date(msg.createdAt || msg.time).toLocaleString()}
-              </p>
+              <small className="text-gray-400">
+                {new Date(msg.createdAt).toLocaleString()}
+              </small>
             </div>
           ))}
         </div>
 
-        {/* Reply Input */}
-        <div className="flex mt-3">
+        <div className="flex mt-2">
           <input
-            className="flex-1 border px-3 py-2 rounded mr-2"
+            className="flex-1 border px-3 py-2 rounded"
             value={reply}
             onChange={(e) => setReply(e.target.value)}
-            placeholder="Type a reply"
+            placeholder="Type reply"
           />
           <button
             onClick={sendReply}
-            className="bg-blue-600 text-white px-6 py-2 rounded"
+            className="ml-2 bg-blue-600 text-white px-4 rounded"
           >
             Send
           </button>
@@ -169,4 +153,3 @@ export default function AdminChat() {
     </div>
   );
 }
-
