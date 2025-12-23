@@ -19,6 +19,7 @@ export default function AdminChat() {
       const res = await axios.get(`${BASE_URL}/api/chat/customers`);
       setCustomers(res.data);
 
+      // Set first customer as default selected
       if (!selectedGuestId && res.data.length > 0) {
         setSelectedGuestId(res.data[0].userId);
       }
@@ -28,11 +29,14 @@ export default function AdminChat() {
     }
   };
 
-  // Load all messages
+  // Load messages for selected customer
   const loadMessages = async () => {
+    if (!selectedGuestId) return;
     try {
       setLoading(true);
-      const res = await axios.get(`${BASE_URL}/api/chat/admin`);
+      const res = await axios.get(
+        `${BASE_URL}/api/chat/admin?guestId=${selectedGuestId}`
+      );
       setMessages(res.data);
     } catch (err) {
       console.error(err);
@@ -52,13 +56,15 @@ export default function AdminChat() {
 
   useEffect(() => {
     loadCustomers();
+  }, []);
+
+  useEffect(() => {
     loadMessages();
     const interval = setInterval(() => {
-      loadCustomers();
       loadMessages();
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedGuestId]);
 
   useEffect(() => {
     scrollMessagesToBottom();
@@ -117,21 +123,30 @@ export default function AdminChat() {
       {/* Chat Messages */}
       <div className="flex-1 h-[879px] flex flex-col">
         <div
-        className="bg-white p-4 h-sc border rounded overflow-y-auto flex-1"
-          ref={messagesContainerRef} // <-- only this div scrolls
-          >
-        {messages.map((msg) => (
-          <div key={msg._id || Math.random()} className="my-2">
-            <b className={msg.sender === "admin" ? "text-red-600" : "text-blue-600"}>
-              {msg.sender === "admin" ? "Admin" : msg.customerName}:
-            </b>
-            <p>{msg.message}</p>
-            <p className="text-gray-400 text-xs">
-              {new Date(msg.time).toLocaleString()}
-            </p>
-          </div>
-        ))}
-      </div>
+          className="bg-white p-4 h-sc border rounded overflow-y-auto flex-1"
+          ref={messagesContainerRef}
+        >
+          {messages.map((msg) => (
+            <div key={msg._id || Math.random()} className="my-2">
+              <b
+                className={
+                  msg.sender === "admin" ? "text-red-600" : "text-blue-600"
+                }
+              >
+                {msg.sender === "admin"
+                  ? "Admin"
+                  : customers.find((c) => c.userId === msg.guestId)
+                      ?.customerName || "Guest"}
+                :
+              </b>
+              <p>{msg.message}</p>
+              <p className="text-gray-400 text-xs">
+                {new Date(msg.createdAt || msg.time).toLocaleString()}
+              </p>
+            </div>
+          ))}
+        </div>
+
         {/* Reply Input */}
         <div className="flex mt-3">
           <input
