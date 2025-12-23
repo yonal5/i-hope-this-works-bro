@@ -1,28 +1,48 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-export default function ChatPage({ user }) { // <-- receive user as prop
+const BASE_URL = import.meta.env.VITE_API_URL;
+
+export default function ChatPage({ user }) {
   const location = useLocation();
   const cartFromState = location.state?.cart || [];
 
   const [messages, setMessages] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [message, setMessage] = useState("");
-  const [cart, setCart] = useState(cartFromState);
+  const [cart] = useState(cartFromState);
+  const [sending, setSending] = useState(false);
 
+  const messagesEndRef = useRef(null);
 
-  // Assign guestId and userNumber
-  const guestId = localStorage.getItem("guestId") || crypto.randomUUID();
-  localStorage.setItem("guestId", guestId);
+  /* =========================
+     STABLE GUEST ID (ONCE)
+  ========================= */
+  const [guestId] = useState(() => {
+    let id = localStorage.getItem("guestId");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("guestId", id);
+    }
+    return id;
+  });
 
-  const userNumber = user?.id || localStorage.getItem("guestNumber") || (() => {
-    const num = Math.floor(Math.random() * 1000000);
-    localStorage.setItem("guestNumber", num);
+  /* =========================
+     STABLE USER NUMBER
+  ========================= */
+  const [userNumber] = useState(() => {
+    let num = localStorage.getItem("guestNumber");
+    if (!num) {
+      num = Math.floor(100000 + Math.random() * 900000);
+      localStorage.setItem("guestNumber", num);
+    }
     return num;
-  })();
+  });
 
-  // Set default customer name
+  /* =========================
+     SET CUSTOMER NAME
+  ========================= */
   useEffect(() => {
     if (user?.name || user?.username) {
       setCustomerName(user.name || user.username);
@@ -31,83 +51,130 @@ export default function ChatPage({ user }) { // <-- receive user as prop
     }
   }, [user, userNumber]);
 
+  /* =========================
+     LOAD MESSAGES
+  ========================= */
   const loadMessages = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/chat?guestId=${guestId}`);
+      const res = await axios.get(
+        `${BASE_URL}/api/chat`,
+        {
+          params: { guestId },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }
+      );
       setMessages(res.data);
     } catch (err) {
-      console.error("Failed to load messages:", err);
+      console.error("Load messages failed:", err);
     }
   };
 
+  /* =========================
+     POLLING (MOBILE SAFE)
+  ========================= */
   useEffect(() => {
     loadMessages();
-    const interval = setInterval(loadMessages, 1500);
+    const interval = setInterval(loadMessages, 2500);
     return () => clearInterval(interval);
   }, []);
 
+  /* =========================
+     AUTO SCROLL
+  ========================= */
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  /* =========================
+     SEND MESSAGE
+  ========================= */
   const sendMessage = async () => {
-    if (!customerName || !message) return;
+    if (!message.trim() || sending) return;
+
+    setSending(true);
 
     try {
-      await axios.post(`${BASE_URL}/api/chat`, {
-        customerName,
-        guestId,
-        message,
-      });
+      await axios.post(
+        `${BASE_URL}/api/chat`,
+        {
+          customerName,
+          guestId,
+          message: message.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }
+      );
 
       setMessage("");
-      loadMessages();
+      await loadMessages();
     } catch (err) {
-      console.error("Failed to send message:", err);
+      console.error("Send message failed:", err);
+      alert("Message failed to send. Please try again.");
+    } finally {
+      setSending(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-4">Chat With Us</h1>
+    <div className="min-h-screen bg-gray-100 p-4 flex flex-col items-center">
+      <h1 className="text-2xl font-bold mb-3">Chat With Us</h1>
 
       <input
-        className="border px-4 py-2 mb-4 rounded"
-        placeholder="Your Name"
+        className="border px-4 py-2 mb-3 rounded w-full max-w-xl bg-gray-100"
         value={customerName}
-        readOnly // prevent editing
+        readOnly
       />
 
-      {/* Show Cart Items */}
+      {/* CART */}
       {cart.length > 0 && (
-        <div className="bg-white w-full max-w-xl p-4 mb-4 rounded border">
-          <h2 className="font-semibold text-lg mb-2">Your Cart Items:</h2>
+        <div className="bg-white w-full max-w-xl p-3 mb-3 rounded border">
+          <h2 className="font-semibold mb-2">Your Cart</h2>
           {cart.map((item, idx) => (
-            <div key={idx} className="flex justify-between border-b py-1">
-              <span>{item.name} x {item.quantity}</span>
-              <span>USD {item.price.toFixed(2)}</span>
+            <div key={idx} className="flex justify-between text-sm">
+              <span>{item.name} × {item.quantity}</span>
+              <span>${item.price.toFixed(2)}</span>
             </div>
           ))}
         </div>
       )}
 
-      {/* Messages */}
-      <div className="bg-white w-full max-w-xl p-4 h-[450px] overflow-y-auto">
+      {/* CHAT */}
+      <div className="bg-white w-full max-w-xl p-3 h-[60vh] overflow-y-auto rounded border">
         {messages.map((msg) => (
-          <div key={msg._id} className="my-2">
-            <b>{msg.sender === "admin" ? "Admin" : msg.customerName}: </b>
-            {msg.message}
+          <div
+            key={msg._id}
+            className={`my-2 text-sm ${
+              msg.sender === "admin" ? "text-right" : "text-left"
+            }`}
+          >
+            <div className="inline-block px-3 py-2 rounded bg-gray-200">
+              <b>{msg.sender === "admin" ? "Admin" : msg.customerName}:</b>{" "}
+              {msg.message}
+            </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
-      <div className="mt-4 flex w-full max-w-xl">
+      {/* INPUT */}
+      <div className="mt-3 flex w-full max-w-xl">
         <input
-          className="flex-1 border px-4 py-2 rounded mr-2"
-          placeholder="Type message..."
+          className="flex-1 border px-4 py-2 rounded-l"
+          placeholder="Type your message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
 
         <button
           onClick={sendMessage}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          disabled={sending}
+          className="bg-blue-600 text-white px-5 py-2 rounded-r disabled:opacity-50"
         >
           Send
         </button>
