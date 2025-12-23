@@ -20,29 +20,43 @@ export default function CartPage({ user }) { // <-- user prop contains registere
 
   // Send cart to admin
   const sendCartToAdmin = async () => {
-    const guestId = localStorage.getItem("guestId") || crypto.randomUUID();
-    localStorage.setItem("guestId", guestId);
+  let userNumber = user?.id; // use registered user id if logged in
 
-    // Use registered name from user object
-    const customerName = user?.name || user?.username || "Guest";
-
-    // Create a single message with all cart items
-    const cartMessage = cart.map(item => `${item.name} x ${item.quantity} - USD ${item.price.toFixed(2)}`).join("\n");
-
-    try {
-      await axios.post(`${BASE_URL}/api/chat`, {
-        guestId,
-        customerName,
-        message: `🛒 Checkout Cart Items:\n${cartMessage}`,
-      });
-
-      // redirect to chat page
-      navigate("/chat");
-    } catch (err) {
-      console.error("Failed to send cart:", err);
-      alert("Failed to send cart to admin.");
+  // If no user, generate a guest number
+  if (!userNumber) {
+    userNumber = localStorage.getItem("guestNumber");
+    if (!userNumber) {
+      userNumber = Math.floor(Math.random() * 1000000); // random number
+      localStorage.setItem("guestNumber", userNumber);
     }
-  };
+  }
+
+  const guestId = localStorage.getItem("guestId") || crypto.randomUUID();
+  localStorage.setItem("guestId", guestId);
+
+  // Name or username for display
+  const customerName = user?.name || user?.username || `User-${userNumber}`;
+
+  const cartMessage = cart
+    .map(
+      (item) => `${item.name} x ${item.quantity} - USD ${item.price.toFixed(2)}`
+    )
+    .join("\n");
+
+  try {
+    await axios.post(`${BASE_URL}/api/chat`, {
+      guestId,
+      customerName,
+      message: `🛒 Checkout Cart Items:\n${cartMessage}`,
+    });
+
+    navigate("/chat");
+  } catch (err) {
+    console.error("Failed to send cart:", err);
+    alert("Failed to send cart to admin.");
+  }
+};
+
 
   return (
     <div className="w-full lg:h-[calc(100vh-100px)] bg-primary flex flex-col pt-[25px] items-center">
