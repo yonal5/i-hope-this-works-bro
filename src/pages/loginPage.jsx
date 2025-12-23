@@ -65,7 +65,7 @@ export default function LoginPage() {
 						<img
 							src="/logo.png"
 							alt="SnapSite"
-							className="h-10 w-auto"
+							className="w-[100]"
 						/>
 						<span className="text-primary/90 tracking-wide font-semibold">
 							Alipres
