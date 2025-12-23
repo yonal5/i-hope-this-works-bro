@@ -11,7 +11,6 @@ export default function ChatPage({ user }) { // <-- receive user as prop
   const [message, setMessage] = useState("");
   const [cart, setCart] = useState(cartFromState);
 
-  const BASE_URL = "http://localhost:5000";
 
   // Assign guestId and userNumber
   const guestId = localStorage.getItem("guestId") || crypto.randomUUID();
