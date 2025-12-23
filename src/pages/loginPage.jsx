@@ -53,7 +53,7 @@ export default function LoginPage() {
 		<div className="min-h-screen w-full relative flex items-stretch">
 			{/* Background image + gradient overlay */}
 			<div className="absolute inset-0">
-				<div className="h-full w-full bg-[url('/bg.jpg')] bg-cover bg-center" />
+				<div className="h-full w-full" />
 				<div className="absolute inset-0 bg-gradient-to-br from-secondary/70 via-secondary/40 to-primary/70" />
 			</div>
 
