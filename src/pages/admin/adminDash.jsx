@@ -18,7 +18,7 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get("/api/admin/stats");
+      const res = await axios.get("http://localhost:5000/api/admin/stats");
       setCards(res.data);
       setStats([
         { name: "Users", value: res.data.users },
@@ -83,5 +83,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-
