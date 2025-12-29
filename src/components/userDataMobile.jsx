@@ -174,11 +174,6 @@ export default function UserDataMobile(){
                                 </button>
                             </li>
                             <li>
-                                <button type="button" className="w-full text-left px-4 py-2 hover:bg-primary/80" onClick={() => onSelect("orders")}>
-                                    Orders
-                                </button>
-                            </li>
-                            <li>
                                 <button type="button" className="w-full text-left px-4 py-2 hover:bg-primary/80" onClick={() => onSelect("logout")}>
                                     Logout
                                 </button>
