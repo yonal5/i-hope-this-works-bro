@@ -288,23 +288,23 @@ export function TtitleBar() {
 
 export function ProductNews() {
   const desktopSlides = [
-    { type: "video", src: "/gaming 66.mp4", className: "object-contain"},
-    { type: "image", src: "/12 (1).png", className: "object-cover" },
-    { type: "image", src: "/12 (1).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (2).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (3).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (5).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (6).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (7).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (8).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (9).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (10).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (12).jpg", className: "object-cover" },
-    { type: "image", src: "/12 (666).jpg", className: "object-cover" },
+ //     { type: "video", src: "/gaming 66.mp4", className: "object-contain"},
+ //     { type: "image", src: "/12 (1).png", className: "object-cover" },
+ //     { type: "image", src: "/12 (1).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (2).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (3).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (5).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (6).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (7).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (8).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (9).jpg", className: "object-cover" }, 
+ //     { type: "image", src: "/12 (10).jpg", className: "object-cover" },
+ //     { type: "image", src: "/12 (12).jpg", className: "object-cover" },
+      { type: "image", src: "/websell.png", className: "" },
   ];
 
   const mobileSlides = [
-    { type: "video", src: "/gaming 66.mp4", className: "object-cover" },
+//    { type: "video", src: "/gaming 66.mp4", className: "object-cover" },
    
   ];
 
@@ -388,7 +388,7 @@ export function ProductNews() {
               <img
                 src={slide.src}
                 alt={`Slide ${i}`}
-                className="w-full h-full object-cover"
+                className="w-[1750px] h-[520px] object-cover"
               />
             ) : (
               <div onClick={() => togglePlay(i)} className="relative w-full h-full flex justify-center items-center group">
