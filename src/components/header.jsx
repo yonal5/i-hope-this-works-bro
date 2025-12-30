@@ -369,7 +369,7 @@ export function ProductNews() {
     <div
       className="
         relative w-full 
-        h-[20vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] 
+        md:h-[50vh] lg:h-[60vh] 
         overflow-hidden bg-black shadow-lg
       "
       onMouseEnter={stopSlider}
