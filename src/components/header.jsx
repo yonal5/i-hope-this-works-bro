@@ -304,7 +304,7 @@ export function ProductNews() {
   ];
 
   const mobileSlides = [
-//    { type: "video", src: "/gaming 66.mp4", className: "object-cover" },
+ { type: "image", src: "/websell.png", className: "" },
    
   ];
 
