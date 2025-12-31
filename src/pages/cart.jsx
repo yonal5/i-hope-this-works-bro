@@ -60,79 +60,97 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 
   return (
-    <div className="w-full lg:h-[calc(100vh-100px)] bg-primary flex flex-col pt-[25px] items-center">
-      <div className="w-[400px] lg:w-[600px] flex flex-col gap-4">
-        {cart.length === 0 ? (
-          <div className="w-full bg-white p-6 text-center rounded">
-            <p className="text-gray-600 text-lg">Your cart is empty</p>
-          </div>
-        ) : (
-          <>
-            {cart.map((item, index) => (
-              <div
-                key={index}
-                className="w-full h-[300px] lg:h-[120px] bg-white flex flex-col lg:flex-row relative items-center p-3 lg:p-0"
-              >
-                <button
-                  onClick={() => removeItem(item)}
-                  className="absolute right-[-40px] text-2xl text-red-500 rounded-full aspect-square hover:bg-red-500 hover:text-white p-[5px] font-bold"
-                >
-                  <BiTrash />
-                </button>
+  <div className="min-h-screen bg-gradient-to-br from-primary to-primary/80 flex justify-center pt-10 px-3">
+    <div className="w-full max-w-3xl flex flex-col gap-6">
 
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-[100px] lg:h-full aspect-square object-cover"
-                />
+      {/* Empty Cart */}
+      {cart.length === 0 && (
+        <div className="bg-white/80 backdrop-blur rounded-2xl p-10 text-center shadow-lg">
+          <p className="text-gray-600 text-xl font-medium">
+            🛒 Your cart is empty
+          </p>
+        </div>
+      )}
 
-                <div className="w-full lg:w-[200px] h-[100px] lg:h-full flex flex-col pl-[5px] pt-[10px] text-center lg:text-left">
-                  <h1 className="font-semibold text-lg">{item.name}</h1>
-                  <span className="text-sm text-secondary">{item.productID}</span>
-                </div>
+      {/* Cart Items */}
+      {cart.map((item, index) => (
+        <div
+          key={index}
+          className="relative bg-white/90 backdrop-blur rounded-2xl shadow-md hover:shadow-xl transition flex flex-col md:flex-row overflow-hidden"
+        >
+          {/* Remove */}
+          <button
+            onClick={() => removeItem(item)}
+            className="absolute top-3 right-3 text-red-500 hover:text-white hover:bg-red-500 p-2 rounded-full transition"
+          >
+            <BiTrash size={20} />
+          </button>
 
-                <div className="w-[100px] h-full flex flex-row lg:flex-col justify-center items-center">
-                  <CiCircleChevUp
-                    className="text-3xl cursor-pointer"
-                    onClick={() => updateCart(item, 1)}
-                  />
-                  <span className="font-semibold text-4xl">{item.quantity}</span>
-                  <CiCircleChevDown
-                    className="text-3xl cursor-pointer"
-                    onClick={() => updateCart(item, -1)}
-                  />
-                </div>
+          {/* Image */}
+          <div className="w-full h-44 bg-gray-100 rounded-xl flex items-center justify-center">
+  <img
+    src={item.image}
+    alt={item.name}
+    className="max-h-full max-w-full object-contain"
+  />
+</div>
 
-                <div className="w-full lg:w-[180px] lg:h-full flex flex-row lg:flex-col items-center justify-center">
-                  {item.labelledPrice > item.price && (
-                    <span className="text-secondary text-lg line-through lg:w-full text-center lg:text-right pr-[10px] lg:mt-[20px]">
-                      USD {item.labelledPrice.toFixed(2)}
-                    </span>
-                  )}
-                  <span className="font-semibold text-accent text-2xl lg:w-full text-center lg:text-right pr-[10px] lg:mt-[5px]">
-                    USD {item.price.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            ))}
 
-            <div className="w-full h-[120px] bg-white flex flex-col-reverse lg:flex-row justify-end items-center relative">
-              <button
-                onClick={sendCartToAdmin}
-                className="lg:absolute left-0 bg-accent text-white px-6 py-3 lg:ml-[20px] hover:bg-accent/80"
-              >
-                Proceed to Checkout
-              </button>
-
-              <div className="h-[50px] flex items-center">
-                <span className="font-semibold text-accent text-2xl lg:text-right lg:pr-[10px]">
-                  Total: USD {getTotal().toFixed(2)}
-                </span>
-              </div>
+          {/* Details */}
+          <div className="flex-1 p-4 flex flex-col justify-between">
+            <div>
+              <h1 className="font-semibold text-lg">{item.name}</h1>
+              <span className="text-sm text-secondary">
+                ID: {item.productID}
+              </span>
             </div>
-          </>
-        )}
-      </div>
+
+            {/* Quantity */}
+            <div className="flex items-center gap-3 mt-3">
+              <CiCircleChevDown
+                className="text-2xl cursor-pointer hover:text-accent"
+                onClick={() => updateCart(item, -1)}
+              />
+              <span className="text-xl font-semibold">
+                {item.quantity}
+              </span>
+              <CiCircleChevUp
+                className="text-2xl cursor-pointer hover:text-accent"
+                onClick={() => updateCart(item, 1)}
+              />
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="w-full md:w-40 p-4 flex flex-col items-end justify-center">
+            {item.labelledPrice > item.price && (
+              <span className="text-gray-400 line-through text-sm">
+                USD {item.labelledPrice.toFixed(2)}
+              </span>
+            )}
+            <span className="text-accent font-bold text-2xl">
+              USD {item.price.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      ))}
+
+      {/* Checkout Bar */}
+      {cart.length > 0 && (
+        <div className="sticky bottom-4 bg-white/95 backdrop-blur rounded-2xl shadow-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <span className="text-2xl font-bold text-accent">
+            Total: USD {getTotal().toFixed(2)}
+          </span>
+
+          <button
+            onClick={sendCartToAdmin}
+            className="bg-accent text-white px-8 py-3 rounded-xl text-lg font-medium hover:bg-accent/80 transition"
+          >
+            🚀 Proceed to Checkout
+          </button>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 }
