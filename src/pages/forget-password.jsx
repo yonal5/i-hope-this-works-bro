@@ -43,7 +43,7 @@ export default function ForgetPassword(){
     }
 
     return(
-        <div className="w-full h-screen  flex justify-center items-center bg-[url('/bg.jpg')] bg-cover bg-center">
+        <div className="w-full h-screen  flex justify-center items-center bg-cover bg-center">
             {step=="email"&&<div className=" w-[400px] h-[400px] backdrop-blur-lg rounded-2xl flex flex-col justify-center items-center p-6">
                 <h1 className="text-2xl font-semibold text-secondary mb-6">Reset Password</h1>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" className="w-full p-3 rounded-lg border border-secondary/20 mb-4 focus:outline-none focus:ring-2 focus:ring-accent"/>
