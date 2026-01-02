@@ -48,7 +48,7 @@ export default function RegisterPage() {
 		<div className="min-h-screen w-full relative flex items-stretch">
 			{/* Background image + gradient overlay */}
 			<div className="absolute inset-0">
-				<div className="h-full w-full bg-[url('/bg.jpg')] bg-cover bg-center" />
+				<div className="h-full w-full bg-cover bg-center" />
 				<div className="absolute inset-0 bg-gradient-to-br from-secondary/70 via-secondary/40 to-primary/70" />
 			</div>
 
@@ -61,11 +61,11 @@ export default function RegisterPage() {
 							<div className="mb-8 flex flex-col items-center text-center">
 								<img
 									src="/logo.png"
-									alt="SnapSite Logo"
+									alt="Aruni Batik CreationsLogo"
 									className="h-12 w-auto mb-4"
 								/>
 								<h2 className="text-2xl font-semibold text-white">
-									Welcome back to SnapSite
+									Welcome back to Aruni Batik Creations
 								</h2>
 								<p className="text-primary/90 text-sm">
 									Log in to continue your beauty journey and checkout faster.
@@ -187,7 +187,7 @@ export default function RegisterPage() {
 
 						{/* Small footer for mobile */}
 						<p className="mt-6 text-center text-primary/80 text-xs lg:hidden">
-							© {new Date().getFullYear()} SnapSite – Best Computer & Gaming Store
+							© {new Date().getFullYear()} Aruni Batik Creations– Batik made with Love
 						</p>
 					</div>
 				</div>
@@ -196,11 +196,11 @@ export default function RegisterPage() {
 					<div className="flex items-center gap-4">
 						<img
 							src="/logo.png"
-							alt="SnapSite - Best Computer & Gaming Store"
+							alt="Aruni Batik Creations- Batik made with Love"
 							className="h-10 w-auto"
 						/>
 						<span className="text-primary/90 tracking-wide font-semibold">
-							SnapSite • Best Computer & Gaming Store
+							Aruni Batik Creations• Batik made with Love
 						</span>
 					</div>
 
@@ -218,7 +218,7 @@ export default function RegisterPage() {
 					</div>
 
 					<p className="text-primary/80 text-sm">
-						© {new Date().getFullYear()} SnapSite – Best Computer & Gaming Store. All rights
+						© {new Date().getFullYear()} Aruni Batik Creations– Batik made with Love. All rights
 						reserved.
 					</p>
 				</div>
