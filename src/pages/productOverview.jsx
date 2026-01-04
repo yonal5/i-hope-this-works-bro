@@ -58,7 +58,7 @@ export default function ProductOverview({ user }) {
       await axios.post(`${BASE_URL}/api/chat`, {
         guestId,
         customerName,
-        message: `🛒User-${userNumber} Checkout Cart Items:\n${productMessage} `,
+        message: `🛒User-${userNumber} Checkout Items:\n${productMessage} `,
       });
 
       navigate("/chat");
