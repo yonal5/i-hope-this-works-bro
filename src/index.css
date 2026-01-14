@@ -1,26 +1,21 @@
 @import "tailwindcss";
 
-/* ================= THEME ================= */
 @theme {
-  --color-accent: #fa812f;
-  --color-primary: #fef3e2;
-  --color-secondary: #393e46;
+	--color-accent: #0000FF;
+	--color-primary: #fef3e2;
+	--color-secondary: #393e46;
 }
 
-/* ================= GOOGLE TRANSLATE FIX ================= */
 
-/* Hide Google branding text */
 .goog-logo-link,
 .goog-te-gadget span {
   display: none !important;
 }
 
-/* Remove extra spacing */
 .goog-te-gadget {
   font-size: 0 !important;
 }
 
-/* Style language dropdown */
 .goog-te-combo {
   font-size: 14px !important;
   padding: 6px 12px !important;
@@ -31,7 +26,7 @@
   cursor: pointer;
 }
 
-/* Remove top Google translate bar */
+
 .goog-te-banner-frame.skiptranslate {
   display: none !important;
 }
@@ -40,7 +35,7 @@ body {
   top: 0px !important;
 }
 
-/* Prevent layout jump */
+
 html {
   scroll-behavior: smooth;
 }
