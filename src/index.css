@@ -1,7 +1,62 @@
 @import "tailwindcss";
 
+/* ================= THEME ================= */
 @theme {
-	--color-accent: #0000FF;
-	--color-primary: #fef3e2;
-	--color-secondary: #393e46;
+  --color-accent: #fa812f;
+  --color-primary: #fef3e2;
+  --color-secondary: #393e46;
 }
+
+/* ================= GOOGLE TRANSLATE FIX ================= */
+
+/* Hide Google branding text */
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}
+
+/* Remove extra spacing */
+.goog-te-gadget {
+  font-size: 0 !important;
+}
+
+/* Style language dropdown */
+.goog-te-combo {
+  font-size: 14px !important;
+  padding: 6px 12px !important;
+  border-radius: 10px !important;
+  border: 1px solid #e5e7eb !important;
+  background-color: white !important;
+  color: #111827 !important;
+  cursor: pointer;
+}
+
+/* Remove top Google translate bar */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+/* Prevent layout jump */
+html {
+  scroll-behavior: smooth;
+}
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
