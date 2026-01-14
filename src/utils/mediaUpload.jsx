@@ -1,8 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 
-
-// REACT_APP_SUPABASE_URL=https://rlxzzlpgpchomxtmsuzu.supabase.co
-// REACT_APP_SUPABASE_PUBLISHABLE_DEFAULT_KEY=sb_publishable_otCDPpgA21FWyURj3pPjTg_d0Wv1k7g
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const publicKey = import.meta.env.VITE_SUPABASE_PUBLIC_KEY;
 const supabase = createClient(supabaseUrl, publicKey);
