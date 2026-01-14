@@ -1,14 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import mediaUpload from "../../utils/mediaUpload";
 import toast from "react-hot-toast";
 import axios from "axios";
 
 export default function UpdateProductPage() {
-	const location = useLocation();
-	const navigate = useNavigate();
-
-	// === State Variables ===
+    const location = useLocation()
 	const [productId, setProductId] = useState(location.state.productID);
 	const [name, setName] = useState(location.state.name);
 	const [altNames, setAltNames] = useState(location.state.altNames.join(","));
@@ -18,102 +15,89 @@ export default function UpdateProductPage() {
 	const [labelledPrice, setLabelledPrice] = useState(location.state.labelledPrice);
 	const [category, setCategory] = useState(location.state.category);
 	const [stock, setStock] = useState(location.state.stock);
-	const [categories, setCategories] = useState([]); // 🔥 category list
+	const navigate = useNavigate();
 
-	// === Load Categories (from backend or fallback static) ===
-	useEffect(() => {
-		async function loadCategories() {
-			try {
-				const res = await axios.get(import.meta.env.VITE_API_URL + "/api/categories");
-				if (res.data && Array.isArray(res.data)) {
-					setCategories(res.data);
-				} else {
-					// fallback static list
-					setCategories(["one color saree", "two color saree", "three color saree", "four color saree", "five color saree", "six color saree", "seven color saree", "eight color saree"]);
-				}
-			} catch (err) {
-				console.warn("⚠️ Failed to load categories, using fallback");
-				setCategories(["one color saree", "two color saree", "three color saree", "four color saree", "five color saree", "six color saree", "seven color saree", "eight color saree"]);
-			}
-		}
-		loadCategories();
-	}, []);
-
-	// === Update Product Function ===
 	async function updateProduct() {
 		const token = localStorage.getItem("token");
-		if (!token) {
+		if (token == null) {
 			navigate("/login");
 			return;
 		}
 
-		const uploadPromises = [];
+		const promises = [];
 		for (let i = 0; i < images.length; i++) {
-			uploadPromises[i] = mediaUpload(images[i]);
+			promises[i] = mediaUpload(images[i]);
 		}
-
+		//
 		try {
-			let urls = await Promise.all(uploadPromises);
+			let urls = await Promise.all(promises);
 
-			if (urls.length === 0) {
-				urls = location.state.images;
-			}
+            if(urls.length == 0 ){
+                urls = location.state.images
+            }
 
-			const alternativeNames = altNames.split(",").map((x) => x.trim());
+			const alternativeNames = altNames.split(",")
 
 			const product = {
-				productID: productId,
-				name: name,
-				altNames: alternativeNames,
-				description: description,
-				images: urls,
-				price: price,
-				labelledPrice: labelledPrice,
-				category: category,
-				stock: stock,
-			};
+				productID : productId,
+				name : name,
+				altNames : alternativeNames,
+				description : description,
+				images : urls,
+				price : price,
+				labelledPrice : labelledPrice,
+				category : category,
+				stock : stock
+			}
 
-			await axios.put(import.meta.env.VITE_API_URL + "/api/products/" + productId, product, {
-				headers: {
-					Authorization: "Bearer " + token,
-				},
-			});
-
-			toast.success("✅ Product updated successfully!");
+			await axios.put(import.meta.env.VITE_API_URL+"/api/products/"+productId,product,{
+				headers:{
+					Authorization : "Bearer "+token
+				}
+			})
+			toast.success("Product updated successfully");
 			navigate("/admin/products");
-		} catch (err) {
-			console.error(err);
-			toast.error("❌ An error occurred while updating");
+
+		} catch {
+			toast.error("An error occurred");
 		}
+
 	}
 
-	// === JSX ===
 	return (
 		<div className="min-h-screen w-full bg-primary/70 flex items-center justify-center p-6">
 			<div className="w-full max-w-3xl rounded-2xl border border-accent/30 bg-white shadow-xl">
 				{/* Header */}
 				<div className="flex items-center justify-between gap-3 border-b border-accent/20 px-6 py-5">
 					<div>
-						<h1 className="text-xl font-semibold text-secondary">Update Product</h1>
-						<p className="text-sm text-secondary/70">Edit product details and metadata.</p>
+						<h1 className="text-xl font-semibold text-secondary">
+							Update Product
+						</h1>
+						<p className="text-sm text-secondary/70">
+							Create a new SKU with clean metadata.
+						</p>
 					</div>
 					<div className="h-10 w-10 rounded-full bg-accent/15 ring-1 ring-accent/30" />
 				</div>
 
-				{/* Form Grid */}
+				{/* Form grid */}
 				<div className="px-6 py-6">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 						{/* Product ID */}
 						<label className="flex flex-col gap-1.5">
-							<span className="text-sm font-medium text-secondary">Product ID</span>
+							<span className="text-sm font-medium text-secondary">
+								Product ID
+							</span>
 							<input
-								disabled
+                                disabled
 								className="h-11 rounded-xl border border-secondary/20 bg-white px-3 text-secondary placeholder:text-secondary/40 outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 								value={productId}
-								onChange={(e) => setProductId(e.target.value)}
+								onChange={(e) => {
+									setProductId(e.target.value);
+								}}
 								placeholder="e.g., DS-CR-001"
 							/>
-                        </label>
+						</label>
 
 						{/* Name */}
 						<label className="flex flex-col gap-1.5">
@@ -121,29 +105,39 @@ export default function UpdateProductPage() {
 							<input
 								className="h-11 rounded-xl border border-secondary/20 bg-white px-3 text-secondary placeholder:text-secondary/40 outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 								value={name}
-								onChange={(e) => setName(e.target.value)}
+								onChange={(e) => {
+									setName(e.target.value);
+								}}
 								placeholder="e.g., Diamond Shine Night Cream"
 							/>
 						</label>
 
 						{/* Alt Names */}
 						<label className="flex flex-col gap-1.5 md:col-span-2">
-							<span className="text-sm font-medium text-secondary">Alternative Names</span>
+							<span className="text-sm font-medium text-secondary">
+								Alternative Names
+							</span>
 							<input
 								className="h-11 rounded-xl border border-secondary/20 bg-white px-3 text-secondary placeholder:text-secondary/40 outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 								value={altNames}
-								onChange={(e) => setAltNames(e.target.value)}
+								onChange={(e) => {
+									setAltNames(e.target.value);
+								}}
 								placeholder="Comma-separated; e.g., night cream, hydrating cream"
 							/>
 						</label>
 
 						{/* Description */}
 						<label className="flex flex-col gap-1.5 md:col-span-2">
-							<span className="text-sm font-medium text-secondary">Description</span>
+							<span className="text-sm font-medium text-secondary">
+								Description
+							</span>
 							<textarea
 								className="min-h-[120px] rounded-xl border border-secondary/20 bg-white px-3 py-2 text-secondary placeholder:text-secondary/40 outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 								value={description}
-								onChange={(e) => setDescription(e.target.value)}
+								onChange={(e) => {
+									setDescription(e.target.value);
+								}}
 								placeholder="Brief product overview, benefits, and usage."
 							/>
 						</label>
@@ -153,11 +147,15 @@ export default function UpdateProductPage() {
 							<span className="text-sm font-medium text-secondary">Images</span>
 							<input
 								type="file"
-								onChange={(e) => setImages(e.target.files)}
+								onChange={(e) => {
+									setImages(e.target.files);
+								}}
 								multiple
 								className="block w-full cursor-pointer rounded-xl border border-secondary/20 bg-white file:mr-4 file:rounded-lg file:border-0 file:bg-accent/10 file:px-4 file:py-2 file:text-secondary file:font-medium hover:file:bg-accent/20 transition"
 							/>
-							<span className="text-xs text-secondary/60">PNG/JPG recommended. Multiple files supported.</span>
+							<span className="text-xs text-secondary/60">
+								PNG/JPG recommended. Multiple files supported.
+							</span>
 						</label>
 
 						{/* Price */}
@@ -166,7 +164,9 @@ export default function UpdateProductPage() {
 							<input
 								type="number"
 								value={price}
-								onChange={(e) => setPrice(e.target.value)}
+								onChange={(e) => {
+									setPrice(e.target.value);
+								}}
 								placeholder="0.00"
 								className="h-11 rounded-xl border border-secondary/20 bg-white px-3 text-secondary placeholder:text-secondary/40 outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 							/>
@@ -174,11 +174,15 @@ export default function UpdateProductPage() {
 
 						{/* Labelled Price */}
 						<label className="flex flex-col gap-1.5">
-							<span className="text-sm font-medium text-secondary">Labelled Price</span>
+							<span className="text-sm font-medium text-secondary">
+								Labelled Price
+							</span>
 							<input
 								type="number"
 								value={labelledPrice}
-								onChange={(e) => setLabelledPrice(e.target.value)}
+								onChange={(e) => {
+									setLabelledPrice(e.target.value);
+								}}
 								placeholder="MRP / Sticker Price"
 								className="h-11 rounded-xl border border-secondary/20 bg-white px-3 text-secondary placeholder:text-secondary/40 outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 							/>
@@ -186,18 +190,24 @@ export default function UpdateProductPage() {
 
 						{/* Category */}
 						<label className="flex flex-col gap-1.5">
-							<span className="text-sm font-medium text-secondary">Category</span>
+							<span className="text-sm font-medium text-secondary">
+								Category
+							</span>
 							<select
 								value={category}
-								onChange={(e) => setCategory(e.target.value)}
+								onChange={(e) => {
+									setCategory(e.target.value);
+								}}
 								className="h-11 rounded-xl border border-secondary/20 bg-white px-3 text-secondary outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 							>
-								<option value="">Select a Category</option>
-								{categories.map((cat, index) => (
-									<option key={index} value={cat.name || cat}>
-										{cat.name || cat}
-									</option>
-								))}
+								<option value="Website blue">Website Blue</option>
+								<option value="Website green">Website Green</option>
+								<option value="Website red">Website Red</option>
+								<option value="Website yellow">Website Yellow</option>
+								<option value="Website perple">Website Perple</option>
+								<option value="Website orenge">Website Orenge</option>
+								<option value="Website black">Website Black</option>
+								<option value="Website blue">Website Blue</option>
 							</select>
 						</label>
 
@@ -207,7 +217,9 @@ export default function UpdateProductPage() {
 							<input
 								type="number"
 								value={stock}
-								onChange={(e) => setStock(e.target.value)}
+								onChange={(e) => {
+									setStock(e.target.value);
+								}}
 								placeholder="0"
 								className="h-11 rounded-xl border border-secondary/20 bg-white px-3 text-secondary placeholder:text-secondary/40 outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 transition"
 							/>
@@ -222,7 +234,9 @@ export default function UpdateProductPage() {
 					</span>
 					<div className="flex items-center gap-2">
 						<button
-							onClick={() => navigate("/admin/products")}
+							onClick={() => {
+								navigate("/admin/products");
+							}}
 							className="rounded-full bg-[#FF000050] px-3 h-[40px] w-[100px] py-1 text-md flex justify-center items-center font-medium text-secondary ring-1 ring-accent/30 hover:border-red-500 hover:border-[2px]"
 						>
 							Cancel
