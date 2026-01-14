@@ -99,7 +99,7 @@ export default function UserData() {
             )}
 
             {/* Name + role (optional) */}
-            <div className="hidden sm:flex flex-col leading-tight">
+            <div className="hidden min-[1177px]:flex flex-col leading-tight">
               <span className="text-sm font-semibold text-secondary">
                 {user.firstName ?? "User"}
               </span>
@@ -147,17 +147,33 @@ export default function UserData() {
               role="menu"
               aria-label="User menu"
               className="absolute right-0 top-12 z-50 w-56 origin-top-right rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-secondary/10 animate-in fade-in zoom-in duration-100"
-            >
+            >{/* User info (visible on small screens) */}
+              <div className="px-3 py-2 border-b border-secondary/10">
+                <p className="text-sm font-semibold text-secondary">
+                  {user.firstName ?? "User"}
+                </p>
+                {user.role && (
+                  <p className="text-xs text-secondary/70">
+                    {user.role}
+                  </p>
+                )}
+              </div>
+
               <MenuItem
                 onClick={() => (window.location.href = "/settings")}
                 label="Account Settings"
               />
-             <div className="my-1 h-px bg-secondary/10" />
+             <MenuItem
+                onClick={() => (window.location.href = "/cart")}
+                label="Cart"
+              />
+              <div className="my-1 h-px bg-secondary/10" />
               <MenuItem
                 destructive
                 onClick={handleLogout}
                 label="Logout"
               />
+         
             </div>
           )}
         </div>
