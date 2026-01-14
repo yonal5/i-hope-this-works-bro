@@ -145,12 +145,12 @@ export default function AdminProductPage() {
 											</td>
 											<td className="px-4 py-3 text-secondary/90">
 												<span className="rounded-md bg-secondary/5 px-2 py-1 text-sm">
-													USD {item.price}
+													LKR {item.price}
 												</span>
 											</td>
 											<td className="px-4 py-3 text-secondary/70">
 												<span className="text-sm line-through">
-													USD {item.labelledPrice}
+													LKR {item.labelledPrice}
 												</span>
 											</td>
 											<td className="px-4 py-3 text-secondary/70">

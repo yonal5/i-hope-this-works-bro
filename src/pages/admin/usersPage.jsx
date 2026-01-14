@@ -1,227 +1,236 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { CiCirclePlus } from "react-icons/ci";
-import { FaRegEdit } from "react-icons/fa";
-import { FaRegTrashCan } from "react-icons/fa6";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Loader } from "../../components/loader";
 import { MdOutlineAdminPanelSettings, MdVerified } from "react-icons/md";
 
-function UserBlockConfirm(props) {
-	const email = props.user.email;
-	const close = props.close;
-	const refresh = props.refresh;
-	function blockUser() {
-		const token = localStorage.getItem("token");
-		axios
-			.put(import.meta.env.VITE_API_URL + "/api/users/block/" + email,{
-                isBlock: !props.user.isBlock
-            },{
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
-			}).then((response) => {
-				console.log(response.data);
-				close();
-				toast.success("User block status changed successfully");
-				refresh();
-			}).catch(() => {
-				toast.error("Failed to change user block status");
-			})
-	}
+// ---------------- BLOCK CONFIRM MODAL ----------------
+function UserBlockConfirm({ user, close, refresh }) {
+  const toggleBlock = () => {
+    const token = localStorage.getItem("token");
+    axios
+      .put(
+        `${import.meta.env.VITE_API_URL}/api/users/block/${user.email}`,
+        { isBlock: !user.isBlock },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => {
+        toast.success("User status updated");
+        close();
+        refresh();
+      })
+      .catch(() => toast.error("Failed to update user"));
+  };
 
-	return (
-		<div className="fixed left-0 top-0 w-full h-screen bg-[#00000050] z-[100] flex justify-center items-center">
-			<div className="w-[500px] h-[200px] bg-primary relative flex flex-col justify-center items-center gap-[40px]">
-				<button
-					onClick={close}
-					className="absolute right-[-42px] top-[-42px] w-[40px] h-[40px] bg-red-600 rounded-full text-white flex justify-center items-center font-bold border border-red-600 hover:bg-white hover:text-red-600"
-				>
-					X
-				</button>
-				<p className="text-xl font-semibold text-center">
-					Are you sure you want to {props.user.isBlock ? "unblock" : "block"} the user with email: {email}?
-				</p>
-				<div className="flex gap-[40px]">
-					<button
-						onClick={close}
-						className="w-[100px] bg-blue-600 p-[5px] text-white hover:bg-accent"
-					>
-						Cancel
-					</button>
-					<button
-						onClick={blockUser}
-						className="w-[100px] bg-red-600 p-[5px] text-white hover:bg-accent"
-					>
-						Yes
-					</button>
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+      <div className="bg-primary rounded-2xl p-6 w-[500px] flex flex-col items-center gap-6 relative">
+        <button
+          onClick={close}
+          className="absolute -top-5 -right-5 w-10 h-10 bg-red-600 text-white rounded-full font-bold hover:bg-white hover:text-red-600 transition"
+        >
+          X
+        </button>
+
+        <p className="text-lg font-semibold text-center">
+          Are you sure you want to{" "}
+          <span className="font-bold">
+            {user.isBlock ? "unblock" : "block"}
+          </span>{" "}
+          this user?
+          <br />
+          <span className="font-mono text-sm">{user.email}</span>
+        </p>
+
+        <div className="flex gap-6">
+          <button
+            onClick={close}
+            className="px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={toggleBlock}
+            className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 transition"
+          >
+            Yes, Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
+// ---------------- MAIN ADMIN USERS PAGE ----------------
 export default function AdminUsersPage() {
-	const [users, setUsers] = useState([]);
-	const [isBlockConfirmVisible, setIsBlockConfirmVisible] = useState(false);
-	const [userToBlock, setUserToBlock] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const navigate = useNavigate();
 
-	const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLoading) return;
 
-	useEffect(() => {
-		if (isLoading) {
-			const token = localStorage.getItem("token");
-			if (token == null) {
-				toast.error("Please login to access admin panel");
-				navigate("/login");
-				return;
-			}
-			axios
-				.get(import.meta.env.VITE_API_URL + "/api/users/all-users", {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				})
-				.then((response) => {
-					console.log(response.data);
-					setUsers(response.data);
-					setIsLoading(false);
-				});
-		}
-	}, [isLoading]);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/login");
+      return;
+    }
 
-	return (
-		<div className="w-full min-h-full">
-			{isBlockConfirmVisible && (
-				<UserBlockConfirm
-					refresh={() => {
-						setIsLoading(true);
-					}}
-					user={userToBlock}
-					close={() => {
-						setIsBlockConfirmVisible(false);
-					}}
-				/>
-			)}
-			{/* Page container */}
-			<div className="mx-auto max-w-7xl p-6">
-				{/* Card */}
-				<div className="rounded-2xl border border-secondary/10 bg-primary shadow-sm">
-					{/* Header bar */}
-					<div className="flex items-center justify-between gap-4 border-b border-secondary/10 px-6 py-4">
-						<h1 className="text-lg font-semibold text-secondary">Users</h1>
-						<span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-							{users.length} users
-						</span>
-					</div>
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/users/all-users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUsers(res.data))
+      .finally(() => setIsLoading(false));
+  }, [isLoading]);
 
-					{/* Table wrapper for responsive scrolling */}
-					<div className="overflow-x-auto">
-						{isLoading ? (
-							<Loader />
-						) : (
-							<table className="w-full min-w-[880px] text-left">
-								<thead className="bg-secondary text-white">
-									<tr>
-										<th className="sticky top-0 z-10 px-4 py-3 text-xs font-semibold uppercase tracking-wide">
-											Image
-										</th>
-										<th className="sticky top-0 z-10 px-4 py-3 text-xs font-semibold uppercase tracking-wide">
-											Email
-										</th>
-										<th className="sticky top-0 z-10 px-4 py-3 text-xs font-semibold uppercase tracking-wide">
-											First Name
-										</th>
-										<th className="sticky top-0 z-10 px-4 py-3 text-xs font-semibold uppercase tracking-wide">
-											Last Name
-										</th>
-										<th className="sticky top-0 z-10 px-4 py-3 text-xs font-semibold uppercase tracking-wide">
-											Role
-										</th>
+  return (
+    <div className="w-full min-h-full relative">
+      {showConfirm && (
+        <UserBlockConfirm
+          user={selectedUser}
+          close={() => setShowConfirm(false)}
+          refresh={() => setIsLoading(true)}
+        />
+      )}
 
-										<th className="sticky top-0 z-10 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-center">
-											Actions
-										</th>
-									</tr>
-								</thead>
+      <div className="mx-auto max-w-7xl p-6">
+        <div className="bg-primary border border-secondary/10 shadow-sm rounded-2xl">
+          {/* Header */}
+          <div className="flex justify-between items-center px-6 py-4 border-b border-secondary/10">
+            <h1 className="text-lg font-semibold text-secondary">Users</h1>
+            <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+              {users.length} users
+            </span>
+          </div>
 
-								<tbody className="divide-y divide-secondary/10">
-									{users.map((user) => {
-										return (
-											<tr
-												key={user.email}
-												className="odd:bg-white even:bg-primary hover:bg-accent/5 transition-colors"
-											>
-												<td className="px-4 py-3">
-													<img
-														src={user.image}
-														referrerPolicy="no-referrer"
-														alt={user.firstName}
-														className={
-															"h-16 w-16 rounded-full object-cover border-4 " +
-															(user.isBlock
-																? " border-red-600"
-																: "border-green-600")
-														}
-													/>
-												</td>
-												<td className="px-4 py-3 font-mono text-sm text-secondary/80 flex items-center gap-2">
-													{user.email}
-													{user.isEmailVerified && <MdVerified color="blue" />}
-												</td>
-												<td className="px-4 py-3 font-medium text-secondary">
-													{user.firstName}
-												</td>
-												<td className="px-4 py-3 text-secondary/90">
-													{user.lastName}
-												</td>
-												<td className="px-4 py-3 text-secondary/70 h-full  ">
-													<div className="flex items-center gap-2">
-														<p className="">
-															{user.role == "admin" && (
-																<MdOutlineAdminPanelSettings />
-															)}
-														</p>
-														{user.role}
-													</div>
-												</td>
+          {/* Table */}
+          <div className="overflow-x-auto">
+            {isLoading ? (
+              <Loader />
+            ) : (
+              <table className="w-full min-w-[880px] text-left">
+                <thead className="bg-secondary text-white">
+                  <tr>
+                    {[
+                      "Image",
+                      "Email",
+                      "First Name",
+                      "Last Name",
+                      "Role",
+                      "Status",
+                      "Actions",
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="sticky top-0 z-10 px-4 py-3 text-xs font-semibold uppercase tracking-wide"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
 
-												<td className="px-4 py-3">
-													<div className="flex items-center justify-center gap-3">
-														{
-															<button
-                                                                onClick={()=>{
-                                                                    setUserToBlock(user)
-                                                                    setIsBlockConfirmVisible(true)
-                                                                }}
-                                                                className="w-[100px] h-[30px] rounded-full cursor-pointer text-white bg-accent hover:bg-accent/70">
-																{user.isBlock ? "Unblock" : "Block"}
-															</button>
-														}
-													</div>
-												</td>
-											</tr>
-										);
-									})}
-									{users.length === 0 && (
-										<tr>
-											<td
-												className="px-4 py-12 text-center text-secondary/60"
-												colSpan={7}
-											>
-												No products to display.
-											</td>
-										</tr>
-									)}
-								</tbody>
-							</table>
-						)}
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+                <tbody className="divide-y divide-secondary/10">
+                  {users.length ? (
+                    users.map((user) => (
+                      <tr
+                        key={user.email}
+                        className="odd:bg-white even:bg-primary hover:bg-accent/5 transition-colors"
+                      >
+                        {/* Image */}
+                        <td className="px-4 py-3">
+                          <img
+                            src={user.image || "https://via.placeholder.com/64"}
+                            alt={user.firstName}
+                            referrerPolicy="no-referrer"
+                            className={`h-16 w-16 rounded-full object-cover ring-2 ${
+                              user.isBlock
+                                ? "ring-red-500"
+                                : "ring-green-500"
+                            }`}
+                          />
+                        </td>
 
+                        {/* Email */}
+                        <td className="px-4 py-3 font-mono text-sm flex items-center gap-2">
+                          {user.email}
+                          {user.isEmailVerified && (
+                            <MdVerified className="text-blue-500" />
+                          )}
+                        </td>
+
+                        <td className="px-4 py-3 font-medium">
+                          {user.firstName}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          {user.lastName}
+                        </td>
+
+                        {/* Role */}
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-secondary/5 px-3 py-1 text-sm">
+                            {user.role === "admin" && (
+                              <MdOutlineAdminPanelSettings />
+                            )}
+                            {user.role}
+                          </span>
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-4 py-3">
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                              user.isBlock
+                                ? "bg-red-100 text-red-700"
+                                : "bg-green-100 text-green-700"
+                            }`}
+                          >
+                            {user.isBlock ? "Blocked" : "Active"}
+                          </span>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-4 py-3">
+                          <div className="flex justify-center">
+                            <button
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setShowConfirm(true);
+                              }}
+                              className={`px-5 py-1 rounded-full text-white transition ${
+                                user.isBlock
+                                  ? "bg-green-600 hover:bg-green-700"
+                                  : "bg-red-600 hover:bg-red-700"
+                              }`}
+                            >
+                              {user.isBlock ? "Unblock" : "Block"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-4 py-12 text-center text-secondary/60"
+                      >
+                        No users available.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

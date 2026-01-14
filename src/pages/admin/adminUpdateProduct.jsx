@@ -29,11 +29,11 @@ export default function UpdateProductPage() {
 					setCategories(res.data);
 				} else {
 					// fallback static list
-					setCategories(["Cream", "Website red", "Serum", "Keyboard", "Mouse", "Motherboard", "Graphics Card"]);
+					setCategories(["one color saree", "two color saree", "three color saree", "four color saree", "five color saree", "six color saree", "seven color saree", "eight color saree"]);
 				}
 			} catch (err) {
 				console.warn("⚠️ Failed to load categories, using fallback");
-				setCategories(["Cream", "Website red", "Serum", "Keyboard", "Mouse", "Motherboard", "Graphics Card"]);
+				setCategories(["one color saree", "two color saree", "three color saree", "four color saree", "five color saree", "six color saree", "seven color saree", "eight color saree"]);
 			}
 		}
 		loadCategories();
