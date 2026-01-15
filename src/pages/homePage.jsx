@@ -56,7 +56,7 @@ export default function HomePage() {
     {/* ================= HEADER ================= */}
     <div className="text-center">
       <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-        Build, Launch & Sell Your Website With Confidence
+        Build, Launch & Get Your Website With Confidence Divolopers
       </h2>
 
       <p className="mt-6 text-gray-600 text-lg max-w-4xl mx-auto">
