@@ -134,13 +134,12 @@ useEffect(() => {
               >
                 <option value="">All</option>
                <option value="Website blue">Website Blue</option>
-								<option value="Website green">Website Green</option>
-								<option value="Website red">Website Red</option>
-								<option value="Website yellow">Website Yellow</option>
-								<option value="Website perple">Website Perple</option>
-								<option value="Website orenge">Website Orenge</option>
-								<option value="Website black">Website Black</option>
-								<option value="Website blue">Website Blue</option>
+				<option value="Website green">Website Green</option>
+				<option value="Website red">Website Red</option>
+				<option value="Website yellow">Website Yellow</option>
+				<option value="Website perple">Website Perple</option>
+				<option value="Website orenge">Website Orenge</option>
+				<option value="Website black">Website Black</option>
               </select>
 
               <div className="flex gap-2 justify-center items-center">
