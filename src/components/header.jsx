@@ -257,14 +257,14 @@ useEffect(() => {
               <div className="absolute right-0 mt-2 w-56 text-accent bg-white rounded-lg shadow-lg z-50 border">
                 {[
                   ["", "All Categories"],
-                  ["one color saree", "ONE Color Saree"],
-                  ["two color saree", "TWO Color Saree"],
-                  ["three color saree", "THREE Color Saree"],
-                  ["four color saree", "FOUR Color Saree"],
-                  ["five color saree", "FIVE Color Saree"],
-                  ["six color saree", "SIX Color Saree"],
-                  ["seven color saree", "SEVEN Color Saree"],
-                  ["eight color saree", "EIGHT Color Saree"],
+                  ["Website blue", "Website Blue"],
+                  ["Website green", "Website Green"],
+                  ["Website red", "Website Red"],
+                  ["Website yellow", "Website Yellow"],
+                  ["Website perple", "Website Perple"],
+                  ["Website orenge", "Website Orenge"],
+                  ["Website black", "Website Black"],
+
                 ].map(([value, label]) => (
                   <button
                     key={value}
