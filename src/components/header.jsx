@@ -133,14 +133,14 @@ useEffect(() => {
                 aria-label="Mobile category"
               >
                 <option value="">All</option>
-                <option value="one color saree">ONE Color Saree</option>
-                <option value="two color saree">TWO Color Saree</option>
-                <option value="three color saree">THREE Color Saree</option>
-                <option value="four color saree">FOUR Color Saree</option>
-                <option value="five color saree">FIVE Color Saree</option>
-                <option value="six color saree">SIX Color Saree</option>
-                <option value="seven color saree">SEVEN Color Saree</option>
-                <option value="eight color saree">EIGHT Color Saree</option>
+               <option value="Website blue">Website Blue</option>
+								<option value="Website green">Website Green</option>
+								<option value="Website red">Website Red</option>
+								<option value="Website yellow">Website Yellow</option>
+								<option value="Website perple">Website Perple</option>
+								<option value="Website orenge">Website Orenge</option>
+								<option value="Website black">Website Black</option>
+								<option value="Website blue">Website Blue</option>
               </select>
 
               <div className="flex gap-2 justify-center items-center">
