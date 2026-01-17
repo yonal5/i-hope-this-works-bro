@@ -16,6 +16,7 @@ import AdminChat from "./admin/AdminChat";
 import AdminUsersPage from "./admin/usersPage";
 import AdminDashboard from "./admin/adminDash";
 import { Loader } from "../components/loader";
+import { FaHome } from "react-icons/fa";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ export default function AdminPage() {
         className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent"
         onClick={() => setMobileMenuOpen(false)}
       >
-        
+        <FaHome />
         Return to Shop
       </Link>
     </>
