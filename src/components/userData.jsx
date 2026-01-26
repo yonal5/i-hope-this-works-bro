@@ -140,22 +140,18 @@ export default function UserData() {
             </button>
           </div>
 
-          {/* Dropdown */}
           {menuOpen && (
             <div
               ref={menuRef}
               role="menu"
-              aria-label="User menu"
-              className="absolute right-0 top-12 z-50 w-56 origin-top-right rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-secondary/10 animate-in fade-in zoom-in duration-100"
-            >{/* User info (visible on small screens) */}
+              className="absolute right-0 top-12 z-50 w-56 rounded-xl bg-white p-1.5 shadow-lg"
+            >
               <div className="px-3 py-2 border-b border-secondary/10">
                 <p className="text-sm font-semibold text-secondary">
                   {user.firstName ?? "User"}
                 </p>
                 {user.role && (
-                  <p className="text-xs text-secondary/70">
-                    {user.role}
-                  </p>
+                  <p className="text-xs text-secondary/70">{user.role}</p>
                 )}
               </div>
 
@@ -163,17 +159,29 @@ export default function UserData() {
                 onClick={() => (window.location.href = "/settings")}
                 label="Account Settings"
               />
-             <MenuItem
+
+              <MenuItem
                 onClick={() => (window.location.href = "/cart")}
                 label="Cart"
               />
+
+
+              {user.role === "admin" && (
+                <>
+                  <div className="my-1 h-px bg-secondary/10" />
+                  <MenuItem
+                    onClick={() => (window.location.href = "/admin")}
+                    label="Admin Panel"
+                  />
+                </>
+              )}
+
               <div className="my-1 h-px bg-secondary/10" />
               <MenuItem
                 destructive
                 onClick={handleLogout}
                 label="Logout"
               />
-         
             </div>
           )}
         </div>
