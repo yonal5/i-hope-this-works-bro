@@ -141,10 +141,14 @@ export default function UserData() {
           </div>
 
           {menuOpen && (
-            <div
+          <div
               ref={menuRef}
               role="menu"
-              className="absolute top-12 z-50 w-56 rounded-xl bg-white p-1.5 shadow-lg left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:right-0"
+              className="
+                absolute top-12 z-50 w-56 rounded-xl bg-white p-1.5 shadow-lg
+                left-1/2 -translate-x-1/2
+                lg:left-auto lg:translate-x-0 lg:right-0
+              "
             >
               <div className="px-3 py-2 border-b border-secondary/10">
                 <p className="text-sm font-semibold text-secondary">
@@ -155,16 +159,25 @@ export default function UserData() {
                 )}
               </div>
 
+              {/* Home button if admin is in admin panel */}
+              {user.role === "admin" && window.location.pathname.includes("/admin") && (
+                <>
+                  <div className="my-1 h-px bg-secondary/10" />
+                  <MenuItem
+                    onClick={() => (window.location.href = "/")}
+                    label="Go to Home"
+                  />
+                </>
+              )}
+
               <MenuItem
                 onClick={() => (window.location.href = "/settings")}
                 label="Account Settings"
               />
-
               <MenuItem
                 onClick={() => (window.location.href = "/cart")}
                 label="Cart"
               />
-
 
               {user.role === "admin" && (
                 <>
@@ -184,6 +197,7 @@ export default function UserData() {
               />
             </div>
           )}
+
         </div>
       )}
     </div>
