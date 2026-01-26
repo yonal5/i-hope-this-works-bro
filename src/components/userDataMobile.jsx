@@ -155,30 +155,47 @@ export default function UserDataMobile(){
                     </button>
 
                     {menuOpen && (
-                        <ul
-                            ref={menuRef}
-                            className="fixed z-[2000] bg-accent text-white rounded shadow-md overflow-auto"
-                            style={{
-                                left: `${menuPos.left}px`,
-                                minWidth: `${menuPos.width}px`,
-                                ...(menuPos.openAbove ? { bottom: `${menuPos.bottom}px` } : { top: `${menuPos.top}px` }),
-                                maxHeight: "60vh",
-                                padding: 0,
-                                margin: 0,
-                                listStyle: "none",
-                            }}
-                        >
-                            <li>
-                                <button type="button" className="w-full text-left px-4 py-2 hover:bg-primary/80" onClick={() => onSelect("settings")}>
-                                    Account Settings
-                                </button>
-                            </li>
-                            <li>
-                                <button type="button" className="w-full text-left px-4 py-2 hover:bg-primary/80" onClick={() => onSelect("logout")}>
-                                    Logout
-                                </button>
-                            </li>
-                        </ul>
+                    <ul
+                       ref={menuRef}
+                       className="fixed z-[2000] bg-accent text-white rounded shadow-md"
+                       style={{
+                         left: `${menuPos.left}px`,
+                         minWidth: `${menuPos.width}px`,
+                         ...(menuPos.openAbove
+                           ? { bottom: `${menuPos.bottom}px` }
+                           : { top: `${menuPos.top}px` }),
+                       }}
+                     >
+                       <li>
+                         <button
+                           className="w-full text-left px-4 py-2 hover:bg-primary/80"
+                           onClick={() => onSelect("settings")}
+                         >
+                           Account Settings
+                         </button>
+                       </li>
+                     
+                       {/* 🔐 ADMIN ONLY */}
+                       {user.role === "admin" && (
+                         <li>
+                           <button
+                             className="w-full text-left px-4 py-2 hover:bg-primary/80"
+                             onClick={() => onSelect("admin")}
+                           >
+                             Admin Panel
+                           </button>
+                         </li>
+                       )}
+                     
+                       <li>
+                         <button
+                           className="w-full text-left px-4 py-2 hover:bg-primary/80"
+                           onClick={() => onSelect("logout")}
+                         >
+                           Logout
+                         </button>
+                       </li>
+                     </ul>                     
                     )}
                 </div>
             )}
