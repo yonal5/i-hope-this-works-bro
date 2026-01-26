@@ -99,7 +99,7 @@ export default function UserData() {
             )}
 
             {/* Name + role (optional) */}
-            <div className="hidden min-[1177px]:flex flex-col leading-tight">
+            <div className="hidden min-[1024px]:flex flex-col leading-tight">
               <span className="text-sm font-semibold text-secondary">
                 {user.firstName ?? "User"}
               </span>
@@ -144,7 +144,7 @@ export default function UserData() {
             <div
               ref={menuRef}
               role="menu"
-              className="absolute right-0 top-12 z-50 w-56 rounded-xl bg-white p-1.5 shadow-lg"
+              className="absolute top-12 z-50 w-56 rounded-xl bg-white p-1.5 shadow-lg left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:right-0"
             >
               <div className="px-3 py-2 border-b border-secondary/10">
                 <p className="text-sm font-semibold text-secondary">
