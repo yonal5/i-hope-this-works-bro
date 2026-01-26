@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import axios from "axios";
+import mediaUpload from "../utils/mediaUpload";
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function ChatPage({ user }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [authError, setAuthError] = useState("");
   const cartFromState = location.state?.cart || [];
-
+  const [selectedImage, setSelectedImage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [message, setMessage] = useState("");
   const [cart] = useState(cartFromState);
   const [sending, setSending] = useState(false);
 
-  /* =========================
-     STABLE GUEST ID (ONCE)
-  ========================= */
+
   const [guestId] = useState(() => {
     let id = localStorage.getItem("guestId");
     if (!id) {
@@ -26,9 +28,7 @@ export default function ChatPage({ user }) {
     return id;
   });
 
-  /* =========================
-     STABLE USER NUMBER
-  ========================= */
+
   const [userNumber] = useState(() => {
     let num = localStorage.getItem("guestNumber");
     if (!num) {
@@ -38,9 +38,23 @@ export default function ChatPage({ user }) {
     return num;
   });
 
-  /* =========================
-     SET CUSTOMER NAME
-  ========================= */
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      setAuthError("⚠️ You are not logged in. Redirecting to login page...");
+  
+      const timer = setTimeout(() => {
+        navigate("/login", {
+          replace: true,
+          state: { from: location.pathname },
+        });
+      }, 2500);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [navigate, location.pathname]);
+
   useEffect(() => {
     if (user?.name || user?.username) {
       setCustomerName(user.name || user.username);
@@ -49,9 +63,6 @@ export default function ChatPage({ user }) {
     }
   }, [user, userNumber]);
 
-  /* =========================
-     LOAD MESSAGES
-  ========================= */
   const loadMessages = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/api/chat`, {
@@ -72,44 +83,74 @@ export default function ChatPage({ user }) {
     }
   };
 
-  /* =========================
-     POLLING
-  ========================= */
+  const sendImage = async () => {
+    if (!selectedImage || sending) return;
+
+    setSending(true);
+
+    try {
+
+      const imageUrl = await mediaUpload(selectedImage);
+
+
+      await axios.post(`${BASE_URL}/api/chat`, {
+        guestId,
+        customerName,
+        type: "image",
+        imageUrl,
+        message: "Image uploaded", 
+      });
+
+      setSelectedImage(null);
+      loadMessages();
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      alert("Image upload failed");
+    } finally {
+      setSending(false);
+    }
+  };
+
+
   useEffect(() => {
     loadMessages();
     const interval = setInterval(loadMessages, 2500);
     return () => clearInterval(interval);
   }, []);
 
-  /* =========================
-     SEND MESSAGE
-  ========================= */
   const sendMessage = async () => {
-  if (!message.trim() || sending) return;
+    if (!message.trim() || sending) return;
 
-  setSending(true);
+    setSending(true);
 
-  const prefixedMessage = `User-${userNumber}: ${message.trim()}`;
+    const prefixedMessage = `User-${userNumber}: ${message.trim()}`;
 
-  try {
-    await axios.post(`${BASE_URL}/api/chat`, {
-      customerName,
-      guestId,
-      message: prefixedMessage,
-    });
+    try {
+      await axios.post(`${BASE_URL}/api/chat`, {
+        customerName,
+        guestId,
+        type: "text",
+        message: prefixedMessage,
+      });
 
-    setMessage("");
-    loadMessages();
-  } catch (err) {
-    console.error("Send message failed:", err);
-    alert("Message failed to send. Please try again.");
-  } finally {
-    setSending(false);
-  }
-};
+      setMessage("");
+      loadMessages();
+    } catch (err) {
+      console.error("Send message failed:", err);
+      alert("Message failed to send. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 flex flex-col items-center">
+    {authError && (
+      <div className="bg-red-100 text-red-700 border border-red-300 px-4 py-3 mb-3 rounded w-full max-w-xl text-center">
+        {authError}
+      </div>
+    )}
+    
       <h1 className="text-2xl font-bold mb-3">Chat With Us</h1>
 
       <input
@@ -139,18 +180,26 @@ export default function ChatPage({ user }) {
           <div
             key={msg._id}
             className={`my-2 text-sm ${
-              msg.sender === "admin" ? "text-right" : "text-left"
+              msg.sender === "admin" ? "text-red-600 text-right" : "text-left"
             }`}
           >
             <div className="inline-block px-3 py-2 rounded bg-gray-200">
-              {msg.message}
+              {msg.type === "image" && msg.imageUrl ? (
+                <img
+                  src={msg.imageUrl}
+                  alt="chat"
+                  className="max-w-[220px] rounded"
+                />
+              ) : (
+                msg.message
+              )}
             </div>
           </div>
         ))}
       </div>
 
       {/* INPUT */}
-      <div className="mt-3 flex w-full max-w-xl">
+      <div className="mt-3 flex w-full max-w-xl items-center">
         <input
           className="flex-1 border px-4 py-2 rounded-l"
           placeholder="Type your message..."
@@ -166,7 +215,10 @@ export default function ChatPage({ user }) {
         >
           Send
         </button>
+
+        
       </div>
     </div>
   );
 }
+  
