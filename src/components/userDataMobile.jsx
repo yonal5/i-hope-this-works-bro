@@ -1,238 +1,209 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Loader } from "./loader";
 
-export default function UserData() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-  const btnRef = useRef(null);
+export default function UserDataMobile(){
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+    const isAdminPage = window.location.pathname.includes("/admin");
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [menuPos, setMenuPos] = useState({ top: null, bottom: null, left: 0, width: 160, openAbove: false });
+    const triggerRef = useRef(null);
+    const menuRef = useRef(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return setLoading(false);
+    // fetch current user
+    useEffect(() => {
+        let mounted = true;
+        async function loadUser() {
+            setLoading(true);
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    if (mounted) {
+                        setUser(null);
+                        setLoading(false);
+                    }
+                    return;
+                }
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (mounted) {
+                    setUser(res.data || null);
+                }
+            } catch (err) {
+                console.error("Failed to load user:", err);
+                localStorage.removeItem("token");
+                if (mounted) setUser(null);
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        }
+        loadUser();
+        return () => { mounted = false; };
+    }, []);
 
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setUser(res.data))
-      .catch(() => {
-        localStorage.removeItem("token");
-        setUser(null);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    // close menu on outside click
+    useEffect(() => {
+        function onDocDown(e) {
+            if (!menuOpen) return;
+            if (triggerRef.current && triggerRef.current.contains(e.target)) return;
+            if (menuRef.current && menuRef.current.contains(e.target)) return;
+            setMenuOpen(false);
+        }
+        document.addEventListener("pointerdown", onDocDown);
+        return () => document.removeEventListener("pointerdown", onDocDown);
+    }, [menuOpen]);
 
-  // Click-outside to close menu
-  useEffect(() => {
-    function onDocClick(e) {
-      if (!menuOpen) return;
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(e.target) &&
-        btnRef.current &&
-        !btnRef.current.contains(e.target)
-      ) {
-        setMenuOpen(false);
-      }
-    }
-    function onEsc(e) {
-      if (e.key === "Escape") setMenuOpen(false);
-    }
-    document.addEventListener("mousedown", onDocClick);
-    document.addEventListener("keydown", onEsc);
-    return () => {
-      document.removeEventListener("mousedown", onDocClick);
-      document.removeEventListener("keydown", onEsc);
+    const openMenu = () => {
+        if (!triggerRef.current) {
+            setMenuOpen(true);
+            return;
+        }
+        const rect = triggerRef.current.getBoundingClientRect();
+        const width = Math.max(160, rect.width);
+
+        // decide open above or below; use small gap (2px) so it looks flush
+        const estimatedMenuHeight = 160;
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+
+        const openAbove = spaceBelow < estimatedMenuHeight && spaceAbove >= estimatedMenuHeight;
+
+        let top = null;
+        let bottom = null;
+
+        if (openAbove) {
+            bottom = Math.max(8, window.innerHeight - rect.top + 2);
+        } else {
+            top = Math.max(8, rect.bottom + 2);
+        }
+
+        let left = Math.max(8, rect.left);
+        const maxLeft = Math.max(8, window.innerWidth - width - 8);
+        if (left > maxLeft) left = maxLeft;
+
+        setMenuPos({ top, bottom, left, width, openAbove });
+        setMenuOpen(true);
     };
-  }, [menuOpen]);
 
-  const initials =
-    user?.firstName || user?.lastName
-      ? `${(user?.firstName ?? "")[0] ?? ""}${(user?.lastName ?? "")[0] ?? ""}`.toUpperCase()
-      : "U";
+    const onSelect = (val) => {
+        setMenuOpen(false);
+        if (val === "logout") {
+            setIsLogoutConfirmOpen(true);
+        } else if (val === "settings") {
+            window.location.href = "/settings";
+        } else if (val === "orders") {
+            window.location.href = "/orders";
+        }
+    };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setMenuOpen(false);
-    window.location.href = "/login";
-  };
-
-  return (
-    <div className="w-full flex items-center justify-center">
-      {/* Loading state */}
-      {loading && (
-        <div
-          className="h-9 w-9 rounded-full border-2 border-primary border-b-transparent animate-spin"
-          role="status"
-          aria-label="Loading"
-        />
-      )}
-
-      {/* Logged-out CTA */}
-      {!loading && !user && (
-        <a
-          href="/login"
-          className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
-        >
-          Login
-        </a>
-      )}
-
-      {/* Logged-in menu */}
-      {user && (
-        <div className="relative flex items-center gap-3">
-          <div className="flex items-center gap-3 rounded-full bg-primary/80 px-3 py-1.5 shadow-sm ring-1 ring-secondary/10">
-            {/* Avatar */}
-            {user.image ? (
-              <img
-                src={user.image}
-                alt={`${user.firstName ?? "User"} avatar`}
-                className="h-9 w-9 rounded-full ring-2 ring-accent/50 object-cover"
-              />
-            ) : (
-              <div className="h-9 w-9 rounded-full bg-accent text-white ring-2 ring-accent/50 flex items-center justify-center text-sm font-bold">
-                {initials}
-              </div>
+    return (
+        <div className="flex justify-center items-center relative">
+            {isLogoutConfirmOpen && (
+                <div className="fixed z-[120] w-full h-screen top-0 left-0 bg-black/30">
+                    <div className="w-[300px] h-[150px] bg-primary rounded-lg p-4 flex flex-col justify-between items-center absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+                        <span className="text-lg">Are you sure you want to logout?</span>
+                        <div className="w-full flex justify-around">
+                            <button
+                                className="bg-accent text-white px-4 py-2 rounded hover:bg-secondary transition"
+                                onClick={() => {
+                                    localStorage.removeItem("token");
+                                    window.location.href = "/login";
+                                }}
+                            >
+                                Yes
+                            </button>
+                            <button
+                                className="bg-accent text-white px-4 py-2 rounded hover:bg-secondary transition"
+                                onClick={() => {
+                                    setIsLogoutConfirmOpen(false);
+                                }}
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
-            {/* Name + role (optional) */}
-            <div className="hidden min-[1024px]:flex flex-col leading-tight">
-              <span className="text-sm font-semibold text-secondary">
-                {user.firstName ?? "User"}
-              </span>
-              {user.role && (
-                <span className="text-[11px] text-secondary/70">{user.role}</span>
-              )}
-            </div>
+            {loading && <div className="w-[30px] h-[30px] border-[3px] border-white border-b-transparent rounded-full animate-spin"></div>}
 
-            {/* Menu button */}
-            <button
-              ref={btnRef}
-              type="button"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-haspopup="menu"
-              aria-expanded={menuOpen}
-              className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-secondary/80 hover:bg-secondary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
-              onKeyDown={(e) => {
-                if (e.key === "ArrowDown") {
-                  e.preventDefault();
-                  setMenuOpen(true);
-                  // focus first item after opening (next tick)
-                  setTimeout(() => {
-                    const first = menuRef.current?.querySelector("button[data-menu-item]");
-                    first?.focus();
-                  }, 0);
-                }
-              }}
-              title="Open menu"
-            >
-              <svg
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
-              </svg>
-            </button>
-          </div>
+            {!loading && user && (
+                <div className="h-full w-full flex justify-center items-center gap-2">
+                    <img
+                        src={user.image || "/placeholder-avatar.png"}
+                        alt={user.firstName || "User"}
+                        className="w-[40px] h-[40px] rounded-full border-[2px] border-primary object-cover"
+                    />
+                    <span className="ml-2">{user.firstName || user.email || "Account"}</span>
 
-          {menuOpen && (
-          <div
-              ref={menuRef}
-              role="menu"
-              className="
-                absolute top-12 z-50 w-56 rounded-xl bg-white p-1.5 shadow-lg
-                left-1/2 -translate-x-1/2
-                lg:left-auto lg:translate-x-0 lg:right-0
-              "
-            >
-              <div className="px-3 py-2 border-b border-secondary/10">
-                <p className="text-sm font-semibold text-secondary">
-                  {user.firstName ?? "User"}
-                </p>
-                {user.role && (
-                  <p className="text-xs text-secondary/70">{user.role}</p>
-                )}
-              </div>
+                    <button
+                        ref={triggerRef}
+                        onClick={() => (menuOpen ? setMenuOpen(false) : openMenu())}
+                        className="ml-2 bg-accent text-white px-3 py-1 rounded flex items-center gap-2"
+                        aria-haspopup="true"
+                        aria-expanded={menuOpen}
+                        type="button"
+                    >
+                        Account
+                        <svg className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                        </svg>
+                    </button>
 
-              {/* Home button if admin is in admin panel */}
-              {user.role === "admin" && window.location.pathname.includes("/admin") && (
-                <>
-                  <div className="my-1 h-px bg-secondary/10" />
-                  <MenuItem
-                    onClick={() => (window.location.href = "/")}
-                    label="Go to Home"
-                  />
-                </>
-              )}
+                    {menuOpen && (
+                    <ul
+                       ref={menuRef}
+                       className="fixed z-[2000] bg-accent text-white rounded shadow-md"
+                       style={{
+                         left: `${menuPos.left}px`,
+                         minWidth: `${menuPos.width}px`,
+                         ...(menuPos.openAbove
+                           ? { bottom: `${menuPos.bottom}px` }
+                           : { top: `${menuPos.top}px` }),
+                       }}
+                     >
+                       <li>
+                         <button
+                           className="w-full text-left px-4 py-2 hover:bg-primary/80"
+                           onClick={() => onSelect("settings")}
+                         >
+                           Account Settings
+                         </button>
+                       </li>
+                     
+                       {/* 🔐 ADMIN ONLY */}
+                       {user.role === "admin" && (
+                         <li>
+                           <button
+                             className="w-full text-left px-4 py-2 hover:bg-primary/80"
+                             onClick={() => onSelect("admin")}
+                           >
+                             Admin Panel
+                           </button>
+                         </li>
+                       )}
+                     
+                       <li>
+                         <button
+                           className="w-full text-left px-4 py-2 hover:bg-primary/80"
+                           onClick={() => onSelect("logout")}
+                         >
+                           Logout
+                         </button>
+                       </li>
+                     </ul>                     
+                    )}
+                </div>
+            )}
 
-              <MenuItem
-                onClick={() => (window.location.href = "/settings")}
-                label="Account Settings"
-              />
-              <MenuItem
-                onClick={() => (window.location.href = "/cart")}
-                label="Cart"
-              />
-
-              {user.role === "admin" && (
-                <>
-                  <div className="my-1 h-px bg-secondary/10" />
-                  <MenuItem
-                    onClick={() => (window.location.href = "/admin")}
-                    label="Admin Panel"
-                  />
-                </>
-              )}
-
-              <div className="my-1 h-px bg-secondary/10" />
-              <MenuItem
-                destructive
-                onClick={handleLogout}
-                label="Logout"
-              />
-            </div>
-          )}
-
+            {!loading && !user && (
+                <a href="/login" className="bg-accent text-white px-4 py-2 rounded hover:bg-secondary transition">
+                    Login
+                </a>
+            )}
         </div>
-      )}
-    </div>
-  );
-}
-
-function MenuItem({ label, onClick, destructive = false }) {
-  return (
-    <button
-      data-menu-item
-      onClick={onClick}
-      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
-        destructive
-          ? "text-red-600 hover:bg-red-50"
-          : "text-secondary hover:bg-primary"
-      }`}
-      onKeyDown={(e) => {
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          const next = e.currentTarget.parentElement?.querySelectorAll("[data-menu-item]");
-          if (!next) return;
-          const items = Array.from(next);
-          const idx = items.indexOf(e.currentTarget);
-          items[(idx + 1) % items.length]?.focus();
-        } else if (e.key === "ArrowUp") {
-          e.preventDefault();
-          const next = e.currentTarget.parentElement?.querySelectorAll("[data-menu-item]");
-          if (!next) return;
-          const items = Array.from(next);
-          const idx = items.indexOf(e.currentTarget);
-          items[(idx - 1 + items.length) % items.length]?.focus();
-        }
-      }}
-    >
-      {label}
-    </button>
-  );
+    );
 }
