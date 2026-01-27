@@ -134,8 +134,14 @@ export default function ProductOverview({ user }) {
 
             {/* Description */}
             <p className="text-gray-700 text-justify leading-relaxed">
-              {product.description}
+              {product.description.split("\n").map((line, index) => (
+                <span key={index}>
+                  {line}
+                  <br />
+                </span>
+              ))}
             </p>
+
           </div>
 
           {/* Buttons */}
@@ -163,4 +169,3 @@ export default function ProductOverview({ user }) {
     </div>
   );
 }
-  
