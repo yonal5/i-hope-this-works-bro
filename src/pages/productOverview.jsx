@@ -116,10 +116,10 @@ export default function ProductOverview({ user }) {
               {product.labelledPrice > product.price ? (
                 <>
                   <span className="line-through text-gray-400">
-                    LKR {Number(product.labelledPrice).toFixed(2)}
+                    USD {Number(product.labelledPrice).toFixed(2)}
                   </span>
                   <span className="text-accent text-2xl font-bold">
-                    LKR {Number(product.price).toFixed(2)}
+                    USD {Number(product.price).toFixed(2)}
                   </span>
                   <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
                     SALE
@@ -127,7 +127,7 @@ export default function ProductOverview({ user }) {
                 </>
               ) : (
                 <span className="text-accent text-2xl font-bold">
-                  LKR {Number(product.price).toFixed(2)}
+                  USD {Number(product.price).toFixed(2)}
                 </span>
               )}
             </div>
@@ -169,4 +169,5 @@ export default function ProductOverview({ user }) {
     </div>
   );
 }
+
 
