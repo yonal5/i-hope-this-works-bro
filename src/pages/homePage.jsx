@@ -56,7 +56,7 @@ export default function HomePage() {
     {/* ================= HEADER ================= */}
     <div className="text-center">
       <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-        Build, Launch & Get Your Website With Confidence Developer
+        Build, Launch & Get Your Online Store to Grow Your Business with Confidence Developer
       </h2>
 
       <p className="mt-6 text-gray-600 text-lg max-w-4xl mx-auto">
@@ -125,7 +125,7 @@ export default function HomePage() {
         </h3>
 
         <p className="mt-5 text-gray-600 text-lg">
-          Every website we build is carefully designed with user behavior in
+          Every store we build is carefully designed with user behavior in
           mind — guiding visitors from their first click to a confident
           purchase decision.
         </p>
@@ -163,7 +163,7 @@ export default function HomePage() {
         </h3>
 
         <p className="mt-5 text-gray-600 text-lg">
-          Whether you are launching your first website or scaling an
+          Whether you are launching your online store or scaling an
           established business, our solutions grow with you — without limits.
         </p>
 
