@@ -5,12 +5,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Loader } from "../components/loader";
 import ImageSlider from "../components/imageSlider";
 import { addToCart } from "../utils/cart";
+import FullScreenZoom from "../components/FullScreenZoom";
+
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function ProductOverview({ user }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [zoomImage, setZoomImage] = useState(null);
 
   const [status, setStatus] = useState("loading");
   const [product, setProduct] = useState(null);
@@ -86,19 +89,21 @@ export default function ProductOverview({ user }) {
         {/* Image */}
         <div className="lg:w-1/2 w-full bg-gray-100 flex justify-center items-center p-4 sm:p-6">
           <ImageSlider
-            images={product?.images || []}
-            className="rounded-xl shadow-md"
-          />
+  images={product?.images || []}
+  onImageClick={(img) => setZoomImage(img)}
+  className="rounded-xl shadow-md"
+/>
+
         </div>
 
         {/* Details */}
         <div className="lg:w-1/2 w-full p-6 sm:p-8 flex flex-col justify-between">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-              {product.name}
+              {product.altNames}
             </h1>
 
-            <p className="text-xs sm:text-sm text-gray-500 mb-3">
+            <p className="text-xs sm:text-sm text-gray-500 mb-3"> 
               Product ID: {product.productID}
             </p>
 
@@ -158,3 +163,4 @@ export default function ProductOverview({ user }) {
     </div>
   );
 }
+  
