@@ -53,7 +53,7 @@ export default function ProductOverview({ user }) {
     const customerName =
       user?.name || user?.username || `User-${userNumber}`;
 
-    const productMessage = `${product.name} x 1 - LKR ${Number(
+    const productMessage = `${product.name} x 1 - USD ${Number(
       product.price
     ).toFixed(2)}`;
 
@@ -169,3 +169,4 @@ export default function ProductOverview({ user }) {
     </div>
   );
 }
+
