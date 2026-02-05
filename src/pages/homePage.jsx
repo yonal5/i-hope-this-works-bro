@@ -35,7 +35,7 @@ export default function HomePage() {
       <Header />
 
       {/* SHOW HERO ONLY ON HOME PAGE */}
-      {location.pathname === "/" && (
+     {location.pathname === "/" && (
         <div className="relative w-full md:h-full overflow-hidden bg-black shadow-lg">
           <img
             src="/websell.png"
