@@ -146,26 +146,60 @@ export default function AdminChat() {
         <div className="p-4 font-bold border-b">Customers</div>
 
         <div className="flex-1 overflow-y-auto">
-          {customers.map((c) => (
-            <div
-              key={c.userId}
-              onClick={() => setSelectedGuestId(c.userId)}
-              className={`p-3 border-b cursor-pointer hover:bg-gray-100 ${
-                selectedGuestId === c.userId ? "bg-gray-200" : ""
-              }`}
-            >
-              <div className="flex justify-between">
-                <span>{c.customerName || c.userId}</span>
-                {c.unreadCount > 0 && selectedGuestId !== c.userId && (
-                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 animate-pulse">
-                    <FaBell />
-                    {c.unreadCount}
-                  </span>
-                )}
-              </div>
+            {customers.map((c) => (
+                <div
+                key={c.userId}
+                onClick={() => setSelectedGuestId(c.userId)}
+                className={`p-3 border-b cursor-pointer hover:bg-gray-100 ${
+                    selectedGuestId === c.userId ? "bg-gray-200" : ""
+                }`}
+                >
+                <div className="flex items-center justify-between">
+
+                    {/* LEFT SIDE (IMAGE + NAME) */}
+                    <div className="flex items-center gap-3">
+
+                    {/* PROFILE IMAGE */}
+                    <img
+                        src={
+                        c.profileImage ||
+                        c.image ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            c.customerName || "User"
+                        )}&background=random`
+                        }
+                        alt="user"
+                        className="w-10 h-10 rounded-full object-cover border"
+                    />
+
+                    {/* NAME */}
+                    <div className="flex flex-col">
+                        <span className="font-medium">
+                        {c.customerName || c.userId}
+                        </span>
+
+                        {/* Optional last message preview */}
+                        {c.lastMessage && (
+                        <span className="text-xs text-gray-500 truncate max-w-[150px]">
+                            {c.lastMessage}
+                        </span>
+                        )}
+                    </div>
+                    </div>
+
+                    {/* RIGHT SIDE (UNREAD BADGE) */}
+                    {c.unreadCount > 0 && selectedGuestId !== c.userId && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 animate-pulse">
+                        <FaBell />
+                        {c.unreadCount}
+                    </span>
+                    )}
+
+                </div>
+                </div>
+            ))}
             </div>
-          ))}
-        </div>
+
       </div>
 
       {/* CHAT AREA */}
