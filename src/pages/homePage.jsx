@@ -44,8 +44,10 @@ export default function HomePage() {
               className="w-full h-full object-cover"
             />
           </div>
-
-          <div className="text-center mt-10">
+            <div className="mt-28 text-center bg-white rounded-3xl p-14 shadow-xl">
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+                Start Building Today
+              </h3>
             <Link
               to="/products"
               className="inline-block bg-accent hover:opacity-90
@@ -55,7 +57,13 @@ export default function HomePage() {
             >
               Get Started Now
             </Link>
-          </div>
+              <p className="mt-5 text-gray-600 text-lg">
+                Join thousands of businesses growing online.
+              </p>
+            </div>
+         
+            
+    
         </>
       )}
 
@@ -147,15 +155,7 @@ export default function HomePage() {
             </div>
 
             {/* CTA */}
-            <div className="mt-28 text-center bg-white rounded-3xl p-14 shadow-xl">
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-                Start Building Today
-              </h3>
-
-              <p className="mt-5 text-gray-600 text-lg">
-                Join thousands of businesses growing online.
-              </p>
-            </div>
+            
 
           </div>
         </div>
