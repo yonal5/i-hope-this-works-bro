@@ -47,6 +47,15 @@ export default function HomePage() {
           
 
         </div>
+        <Link
+        to="/products"
+        className="inline-block mt-10 bg-accent hover:opacity-90
+                   text-white text-lg font-semibold
+                   px-10 py-4 rounded-lg shadow-lg
+                   transition-all duration-300"
+      >
+        Get Started Now
+      </Link>
       )}
       {location.pathname === "/" && (
 
@@ -208,15 +217,7 @@ export default function HomePage() {
         reliable, and conversion-focused websites built to succeed.
       </p>
 
-       <Link
-        to="/products"
-        className="inline-block mt-10 bg-accent hover:opacity-90
-                   text-white text-lg font-semibold
-                   px-10 py-4 rounded-lg shadow-lg
-                   transition-all duration-300"
-      >
-        Get Started Now
-      </Link>
+     
     </div>
 
   </div>
