@@ -45,36 +45,36 @@ export default function HomePage() {
             />
           </div>
 
-           <div className="mt-28 text-center bg-white rounded-3xl p-14 shadow-xl">
-      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-        Start Building Your Online Presence Today
-      </h3>
+          <div className="mt-28 text-center bg-white rounded-3xl p-14 shadow-xl">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Start Building Your Online Presence Today
+            </h3>
 
-      <p className="mt-5 text-gray-600 text-lg max-w-3xl mx-auto">
-        Join thousands of businesses already growing online with powerful,
-        reliable, and conversion-focused websites built to succeed.
-      </p>
+            <p className="mt-5 text-gray-600 text-lg max-w-3xl mx-auto">
+              Join thousands of businesses already growing online with powerful,
+              reliable, and conversion-focused websites built to succeed.
+            </p>
 
-       <Link
-        to="/products"
-        className="inline-block mt-10 bg-accent hover:opacity-90
-                   text-white text-lg font-semibold
-                   px-10 py-4 rounded-lg shadow-lg
-                   transition-all duration-300"
-      >
-        Get Started Now
-      </Link>
-    </div>
+            <Link
+              to="/products"
+              className="inline-block mt-10 bg-accent hover:opacity-90
+                         text-white text-lg font-semibold
+                         px-10 py-4 rounded-lg shadow-lg
+                         transition-all duration-300"
+            >
+              Get Started Now
+            </Link>
+          </div>
         </>
       )}
 
       {/* MAIN CONTENT */}
       {isHome && (
-        <div className="w-full bg-gray-50 py-24 px-4">
-  <div className="max-w-7xl mx-auto">
+       <div className="w-full bg-gray-50 py-24 px-4">
+     <div className="max-w-7xl mx-auto">
 
-    {/* ================= HEADER ================= */}
-    <div className="text-center">
+      {/* ================= HEADER ================= */}
+      <div className="text-center">
       <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
         Build, Launch & Get Your Online Store to Grow Your Business with Confidence Developer
       </h2>
@@ -84,10 +84,10 @@ export default function HomePage() {
         good — they load fast, rank on search engines, and convert visitors
         into real paying customers.
       </p>
-    </div>
+     </div>
 
-    {/* ================= STATS ================= */}
-    <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
+     {/* ================= STATS ================= */}
+      <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
 
       <div className="bg-white rounded-2xl p-8 shadow-md">
         <FaGlobe className="text-accent text-4xl mx-auto" />
@@ -124,11 +124,11 @@ export default function HomePage() {
           Modern security standards to protect your data and customers
         </p>
       </div>
+      </div>
+    
 
-    </div>
-
-    {/* ================= FEATURES WITH IMAGES ================= */}
-    <div className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      {/* ================= FEATURES WITH IMAGES ================= */}
+      <div className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
       {/* IMAGE */}
       <img
@@ -171,10 +171,10 @@ export default function HomePage() {
           </li>
         </ul>
       </div>
-    </div>
+      </div>
 
-    {/* ================= SECOND FEATURE ================= */}
-    <div className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      {/* ================= SECOND FEATURE ================= */}
+      <div className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
       {/* TEXT */}
       <div>
@@ -215,7 +215,9 @@ export default function HomePage() {
         alt="Website performance and analytics"
         className="w-full rounded-3xl shadow-lg"
       />
-    </div>
+      </div>
+      </div>
+      </div>
       )}
 
       {/* ROUTES */}
