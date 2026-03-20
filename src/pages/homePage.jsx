@@ -45,25 +45,26 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="mt-28 text-center bg-white rounded-3xl p-14 shadow-xl">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Start Building Today
-            </h3>
+           <div className="mt-28 text-center bg-white rounded-3xl p-14 shadow-xl">
+      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
+        Start Building Your Online Presence Today
+      </h3>
 
-            <Link
-              to="/products"
-              className="inline-block bg-accent hover:opacity-90
-                         text-white text-lg font-semibold
-                         px-10 py-4 rounded-lg shadow-lg
-                         transition-all duration-300"
-            >
-              Get Started Now
-            </Link>
+      <p className="mt-5 text-gray-600 text-lg max-w-3xl mx-auto">
+        Join thousands of businesses already growing online with powerful,
+        reliable, and conversion-focused websites built to succeed.
+      </p>
 
-            <p className="mt-5 text-gray-600 text-lg">
-              Join thousands of businesses growing online.
-            </p>
-          </div>
+       <Link
+        to="/products"
+        className="inline-block mt-10 bg-accent hover:opacity-90
+                   text-white text-lg font-semibold
+                   px-10 py-4 rounded-lg shadow-lg
+                   transition-all duration-300"
+      >
+        Get Started Now
+      </Link>
+    </div>
         </>
       )}
 
