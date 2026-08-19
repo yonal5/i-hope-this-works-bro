@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const publicKey = import.meta.env.VITE_SUPABASE_PUBLIC_KEY;
 const supabase = createClient(supabaseUrl, publicKey);
-
+                           
 
 export default function mediaUpload(file) {
 	return new Promise(async (resolve, reject) => {
