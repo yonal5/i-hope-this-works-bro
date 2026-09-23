@@ -1,0 +1,50 @@
+.admin-orders-container {
+  padding: 20px;
+  background: #f9fafb;
+}
+
+h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.website-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.theme-box {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.status.pending {
+  color: orange;
+}
+
+.status.completed {
+  color: green;
+}
+
+.status.cancelled {
+  color: red;
+}
