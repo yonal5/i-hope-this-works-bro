@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import mediaUpload from "../../utils/mediaUpload";
 import { FaPaperPlane, FaBell } from "react-icons/fa";
@@ -22,9 +22,13 @@ export default function AdminChat() {
   }, []);
 
   /* ================= LOAD CUSTOMERS ================= */
-  const loadCustomers = async () => {
+  const loadCustomers = useCallback(async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/chat/customers`);
+      const res = await axios.get(`${BASE_URL}/api/chat/customers`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      });
 
       setCustomers((prev) => {
         if (JSON.stringify(prev) === JSON.stringify(res.data)) {
@@ -44,15 +48,18 @@ export default function AdminChat() {
     } catch (err) {
       console.error("Load customers failed:", err);
     }
-  };
+  }, [selectedGuestId]);
 
   /* ================= LOAD MESSAGES ================= */
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     if (!selectedGuestId) return;
 
     try {
       const res = await axios.get(`${BASE_URL}/api/chat/admin`, {
         params: { guestId: selectedGuestId },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
       });
 
       const newMessages = res.data;
@@ -76,7 +83,7 @@ export default function AdminChat() {
     } catch (err) {
       console.error("Load messages failed:", err);
     }
-  };
+  }, [selectedGuestId]);
 
   /* ================= POLLING ================= */
   useEffect(() => {
@@ -89,7 +96,7 @@ export default function AdminChat() {
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [selectedGuestId]);
+  }, [selectedGuestId, loadCustomers, loadMessages]);
 
   /* ================= SEND TEXT ================= */
   const sendText = async () => {
@@ -102,6 +109,10 @@ export default function AdminChat() {
         guestId: selectedGuestId,
         message: text,
         type: "text",
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
       });
 
       setText("");
@@ -126,6 +137,10 @@ export default function AdminChat() {
         guestId: selectedGuestId,
         imageUrl,
         type: "image",
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
       });
 
       setImage(null);
