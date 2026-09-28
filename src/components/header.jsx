@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 
 // Icons
 import { MdMenu } from "react-icons/md";
@@ -70,7 +70,8 @@ useEffect(() => {
     <div className="w-full h-full flex relative ">
       <img
         src="/logo.png"
-        className="hidden lg:flex h-full absolute w-[180px] left-0  object-cover"
+        className="hidden lg:flex h-full absolute left-[-20px] top-0 object-cover
+                  w-[180px] min-[1200px]:w-[280px]"
       />
       {/* mobile header: menu, logo and search toggle */}
       <div className="lg:hidden w-full relative flex justify-center items-center">
@@ -333,7 +334,7 @@ export function TtitleBar() {
 
 
 export function ProductNews() {
-  const desktopSlides = [
+  const desktopSlides = useMemo(() => [
  //     { type: "video", src: "/gaming 66.mp4", className: "object-contain"},
  //     { type: "image", src: "/12 (1).png", className: "object-cover" },
  //     { type: "image", src: "/12 (1).jpg", className: "object-cover" },
@@ -347,12 +348,12 @@ export function ProductNews() {
  //     { type: "image", src: "/12 (10).jpg", className: "object-cover" },
  //     { type: "image", src: "/12 (12).jpg", className: "object-cover" },
       { type: "image", src: "/websell.png", className: "" },
-  ];
+  ], []);
 
-  const mobileSlides = [
+  const mobileSlides = useMemo(() => [
  { type: "image", src: "/websell.png", className: "" },
    
-  ];
+  ], []);
 
   const [slides, setSlides] = useState(desktopSlides);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -367,7 +368,7 @@ export function ProductNews() {
     checkScreen();
     window.addEventListener("resize", checkScreen);
     return () => window.removeEventListener("resize", checkScreen);
-  }, []);
+  }, [desktopSlides, mobileSlides]);
 
   const togglePlay = (i) => {
     const video = videoRefs.current[i];
@@ -375,18 +376,18 @@ export function ProductNews() {
     video.paused ? video.play() : video.pause();
   };
 
-  const startSlider = () => {
+  const startSlider = useCallback(() => {
     if (intervalRef.current) return;
     intervalRef.current = setInterval(
       () => setCurrentIndex((prev) => (prev + 1) % slides.length),
       5000
     );
-  };
+  }, [slides.length]);
 
-  const stopSlider = () => {
+  const stopSlider = useCallback(() => {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
-  };
+  }, []);
 
   const prevSlide = () =>
     setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
@@ -396,7 +397,7 @@ export function ProductNews() {
   useEffect(() => {
     startSlider();
     return () => stopSlider();
-  }, [slides]);
+  }, [slides, startSlider, stopSlider]);
 
   useEffect(() => {
     slides.forEach((slide, i) => {
