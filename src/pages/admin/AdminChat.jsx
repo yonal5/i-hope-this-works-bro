@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import mediaUpload from "../../utils/mediaUpload";
 import { FaPaperPlane, FaBell } from "react-icons/fa";
+import { enablePushNotifications, sendPushTest } from "../../utils/pushNotifications";
+import toast from "react-hot-toast";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -12,6 +14,28 @@ export default function AdminChat() {
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [, setLoading] = useState(false);
+  const [pushEnabled, setPushEnabled] = useState(false);
+
+  const enableNotifications = async () => {
+    try {
+      await enablePushNotifications();
+      setPushEnabled(true);
+      toast.success("Phone notifications enabled");
+    } catch (err) {
+      console.error("Push notification setup failed:", err);
+      toast.error(err.message || "Could not enable notifications");
+    }
+  };
+
+  const testNotifications = async () => {
+    try {
+      await sendPushTest();
+      toast.success("Test notification sent");
+    } catch (err) {
+      console.error("Push notification test failed:", err);
+      toast.error(err.message || "Test notification failed");
+    }
+  };
 
   const notificationSoundRef = useRef(null);
   const lastMessageIdRef = useRef(null);
