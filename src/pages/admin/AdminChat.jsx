@@ -244,9 +244,29 @@ export default function AdminChat() {
       {/* CHAT AREA */}
       <div className="flex-1 flex flex-col">
 
-        <div className="p-4 border-b bg-white font-semibold">
-          {customers.find((c) => c.userId === selectedGuestId)?.customerName ||
-            "Select Customer"}
+        <div className="p-4 border-b bg-white font-semibold flex items-center justify-between gap-3">
+          <span>
+            {customers.find((c) => c.userId === selectedGuestId)?.customerName ||
+              "Select Customer"}
+          </span>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={enableNotifications}
+              className="text-xs px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 whitespace-nowrap"
+            >
+              {pushEnabled ? "🔔 Notifications On" : "🔔 Enable Phone Notifications"}
+            </button>
+
+            {pushEnabled && (
+              <button
+                onClick={testNotifications}
+                className="text-xs px-3 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Test
+              </button>
+            )}
+          </div>
         </div>
 
         {/* MESSAGES */}
